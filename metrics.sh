@@ -27,7 +27,7 @@ PM_INFO_AMP=${PM_INFO}-${AMP}
 #############################################################################################################
 echo "**************** ${PMLIB_WATT}"
 
-for i in $(seq 1 2);
+for i in $(seq 1 10);
 do
     echo "============== Run: ${i} =============="
 
@@ -50,7 +50,7 @@ do
     echo "Start matrix multiplication: ${START}"
     echo -e "Finish matrix multiplication: ${FINISH}\n"
 
-    sleep 20s
+    sleep 60s
     screen -X -S ${PM_INFO_WATT} quit
     screen -X -S ${PMLIB_WATT} quit
     awk '{print $1":"$2":"$3}' screenlog.0 | awk -F ':' '{print $1":"$2":"$3","$5}' > ${PM_INFO_WATT}.date.data.${i}
