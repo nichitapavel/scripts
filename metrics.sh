@@ -1,41 +1,112 @@
 #!/bin/bash
 
-# set -ex
+set -x
 
 # TODO Add a proper arguments parser
 
-# REMOTE_USER=$1
-# HOST=$2
-LOOPS=$1
-
-
-PMLIB=PMLib
-PM_INFO=PM-info
-WATT=odroid-watt
-VOLT=odroid-volt
-AMP=odroid-amp
-CAPEW=watt-APCape.json
-CAPEV=volt-APCape.json
-CAPEA=amp-APCape.json
-
-MATRIX_SIZE=(100 200 300 400 500 600 700 800 900 1000)
-
-PMLIB_WATT=${PMLIB}-${WATT}
-PMLIB_VOLT=${PMLIB}-${VOLT}
-PMLIB_AMP=${PMLIB}-${AMP}
-
-PM_INFO_WATT=${PM_INFO}-${WATT}
-PM_INFO_VOLT=${PM_INFO}-${VOLT}
-PM_INFO_AMP=${PM_INFO}-${AMP}
-
-DIRECTORY=~/data/odroid-ubuntu-model-a/2019-03-22-09-00-float-data/
 SLEEP_PMLIB_STARTUP=5
 SLEEP_START=5
 SLEEP_FINISH=5
 
+# Default values
+PRINT_MATRIX='false'
+# MATRIX_SIZE=(100 200 300 400 500 600 700 800 900 1000)
+MATRIX_SIZE=(100)
+
+while [ "$1" != "" ]
+do
+case $1 in
+  -n|--name)
+    NAME=$2
+    shift 2
+  ;;
+  --pm-info)
+    PM_INFO_FLASK=$2
+    shift 2
+  ;;
+  --pmlib-server)
+    PMLIB_SERVER=$2
+    shift 2
+  ;;
+  -s|--system)
+    SYSTEM=$2
+    shift 2
+  ;;
+  --device)
+    DEVICE=$2
+    shift 2
+  ;;
+  --print-matrix)
+    PRINT_MATRIX='true'
+    shift
+  ;;
+  --size-list)
+    MATRIX_SIZE=''
+    shift 2
+  ;;
+  -d|--directory)
+    DIRECTORY=$2
+    shift 2
+  ;;
+  -l|--loops)
+    LOOPS=$2
+    shift 2
+  ;;
+  --line)
+    LINE=$2
+    shift 2
+  ;;
+  -p|--port)
+    PORT=$2
+    shift 2
+  ;;
+esac
+done
+
 
 #############################################################################################################
-echo "**************** ${PMLIB_WATT}"
+# Valid call for linux systems:
+#  ./metrics-parser.sh
+#    -n test
+#    -l 2
+#    -d /home/pavel/data/testing/
+#    -p 5001
+#    --line 2
+#    --pmlib-server 10.209.2.79:6526
+#    --pm-info 10.209.3.126
+#    --print-matrix
+#    -s linux
+#    --linux-device odroid@10.209.2.95
+#
+# Valid call for android systems:
+#  ./metrics-parser.sh
+#    -n test
+#    -l 2
+#    -d /home/pavel/data/testing/
+#    -p 5001
+#    --line 2
+#    --pmlib-server 10.209.2.79:6526
+#    --pm-info 10.209.3.126
+#    --print-matrix
+#    -s android
+#    --appium-device 10.209.2.95:5555
+#############################################################################################################
+
+REQUIRED=(NAME PM_INFO_FLASK PMLIB_SERVER SYSTEM DEVICE LOOPS PORT DIRECTORY LINE)
+for arg in ${REQUIRED[@]};
+do
+  if [ -z "${!arg}" ]; then
+    if [ "${arg}" != "DEVICE" ]; then
+      echo "You're missing a required argument ${arg}"
+      exit 1
+    elif [ "${SYSTEM}" == "linux" ]; then
+      echo "Linux systems require a device argument ${arg}"
+      exit 1
+    fi
+  fi
+done
+
+PM_INFO_FLASK=http://${PM_INFO_FLASK}:${PORT}/message
 
 for i in $(seq 1 ${LOOPS});
 do
@@ -43,9 +114,6 @@ do
   for j in ${MATRIX_SIZE[@]}
   do
     echo "============== Size: ${j} =============="
-    ssh debian@10.209.2.79 "screen -dmS ${PMLIB_WATT} ~/bin/pmlib_server --configfile ~/git/PMLib/new/${CAPEW}" &> /dev/null
-    sleep ${SLEEP_PMLIB_STARTUP}s
-    # screen -h 1000000000 -L -dmS ${PM_INFO_WATT} ~/bin/pm-info -s localhost:6526 -r APCape8L
     if [ ${i} -lt 10 ]; then
       I=0${i}
     else I=${i}
@@ -54,38 +122,48 @@ do
       J=0${j}
     else J=${j}
     fi
-    screen -dmS ${PM_INFO_WATT} ~/git/PMLib/Python/.venv/bin/python ~/git/PMLib/Python/client/thread_flask_pminfo.py -s 10.209.2.79:6526 -d ${DIRECTORY} -f data-${J}-${I}.csv -r APCape8L
+    screen -L -dmS ${NAME} \
+      ~/git/python-scripts/.venv/bin/python ~/git/python-scripts/thread_flask_pminfo.py \
+        -l ${LINE} \
+        -p ${PORT} \
+        -s ${PMLIB_SERVER} \
+        -d "${DIRECTORY}/${NAME}/" \
+        -f data-${NAME}-${J}-${I}.csv \
+        -r APCape8L
     ##############################
     sleep ${SLEEP_START}s
 
-    START=$(date +%Y-%m-%d\ %H:%M:%S\ %N)
-
-    # matrix multiplication linux odroid
-    ssh odroid@10.209.2.95 "~/matrix-jar-app-0.4.1/bin/matrix-jar-app ${j} 50 false http://10.209.3.126:5000/message"
-
-    # matrix multiplication android odroid
-    # adb connect 10.209.2.95:5555 &> /dev/null
-    # cd development/releases/appium/matrix-android-appium-0.2.1/bin/ > /dev/null
-    # ./matrix-android-appium ${j} 50 false  http://10.209.3.126:5000/message
-    # cd - > /dev/null
-
-    FINISH=$(date +%Y-%m-%d\ %H:%M:%S\ %N)
-
-    echo "Start matrix multiplication: ${START}"
-    echo -e "Finish matrix multiplication: ${FINISH}\n"
+    if [ "${SYSTEM}" == "linux" ]; then
+      # matrix multiplication linux odroid
+      ssh ${DEVICE} "~/matrix-jar-app-0.4.1-int/bin/matrix-jar-app ${j} 50 ${PRINT_MATRIX} ${PM_INFO_FLASK}"
+    elif [ "${SYSTEM}" == "android" ]; then
+      # matrix multiplication android odroid
+      ADB=$(echo ${DEVICE} | awk -F '.' '{print $4}')
+      if [ -n "${ADB}" ]; then
+        adb connect ${DEVICE} &> /dev/null
+      fi
+      # cd ~/development/releases/appium/matrix-android-appium-0.2.1/bin/ > /dev/null
+      cd ~/matrix-android-appium-0.2.1/bin/ > /dev/null
+      ./matrix-android-appium ${j} 50 ${PRINT_MATRIX} ${PM_INFO_FLASK}
+      cd - > /dev/null
+    else
+      echo "Unkown operating system. Exiting..."
+      screen -X -S ${NAME} quit &> /dev/null
+      exit 1
+    fi
 
     ###################################3
     sleep ${SLEEP_FINISH}s
-    ssh debian@10.209.2.79 "screen -X -S ${PMLIB_WATT} quit"  &> /dev/null
-    screen -X -S ${PM_INFO_WATT} quit &> /dev/null
+    screen -X -S ${NAME} quit &> /dev/null
   done
 done
 
-cp metrics.log ${DIRECTORY}
-cp ~/git/scripts/metrics.sh ${DIRECTORY}
+cp metrics.log "${DIRECTORY}/${NAME}/"
+cp ~/git/scripts/metrics.sh "${DIRECTORY}/${NAME}/"
 
-# ~/git/python-scripts/.venv/bin/python ~/git/python-scripts/transform_timestamp.py -d ${DIRECTORY}
-# ~/git/plots/.venv/bin/python ~/git/plots/wattios.py -d ${DIRECTORY}
+# ~/git/python-scripts/.venv/bin/python ~/git/python-scripts/rm_last_line.py -d "${DIRECTORY}/${NAME}/"
+# ~/git/python-scripts/.venv/bin/python ~/git/python-scripts/transform_timestamp.py -d "${DIRECTORY}/${NAME}/"
+# ~/git/plots/.venv/bin/python ~/git/plots/wattios.py -d "${DIRECTORY}/${NAME}/"
 
 #############################################################################################################
 
