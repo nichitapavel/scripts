@@ -122,7 +122,7 @@ do
       J=0${j}
     else J=${j}
     fi
-    screen -L -dmS ${NAME} \
+    screen -dmS ${NAME} \
       ~/git/python-scripts/.venv/bin/python ~/git/python-scripts/thread_flask_pminfo.py \
         -l ${LINE} \
         -p ${PORT} \
