@@ -60,6 +60,10 @@ case $1 in
     PORT=$2
     shift 2
   ;;
+  --appium-port)
+    APPIUM_PORT=$2
+    shift 2
+  ;;
 esac
 done
 
