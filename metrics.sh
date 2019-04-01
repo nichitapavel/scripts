@@ -4,9 +4,9 @@ set -x
 
 # TODO Add a proper arguments parser
 
-SLEEP_PMLIB_STARTUP=5
-SLEEP_START=5
-SLEEP_FINISH=5
+SLEEP_PMLIB_STARTUP=10
+SLEEP_START=10
+SLEEP_FINISH=10
 
 # Default values
 PRINT_MATRIX='false'
