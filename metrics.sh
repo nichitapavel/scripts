@@ -135,7 +135,8 @@ do
 
     if [ "${SYSTEM}" == "linux" ]; then
       # matrix multiplication linux odroid
-      ssh ${DEVICE} "~/matrix-jar-app-0.4.1-int/bin/matrix-jar-app ${j} 50 ${PRINT_MATRIX} ${PM_INFO_FLASK}"
+      # Expects bin file to be always in ~/matrix-jar-app independent of version
+      ssh ${DEVICE} "~/matrix-jar-app/bin/matrix-jar-app ${j} 50 ${PRINT_MATRIX} ${PM_INFO_FLASK}"
     elif [ "${SYSTEM}" == "android" ]; then
       # matrix multiplication android odroid
       ADB=$(echo ${DEVICE} | awk -F '.' '{print $4}')
