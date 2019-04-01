@@ -160,8 +160,9 @@ do
   done
 done
 
-cp metrics.log "${DIRECTORY}/${NAME}/"
-cp ~/git/scripts/metrics.sh "${DIRECTORY}/${NAME}/"
+# TODO create a log file with variables data.
+# cp metrics.log "${DIRECTORY}/${NAME}/"
+# cp ~/git/scripts/metrics.sh "${DIRECTORY}/${NAME}/"
 
 #############################################################################################################
 
