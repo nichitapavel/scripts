@@ -143,8 +143,9 @@ do
       if [ -n "${ADB}" ]; then
         adb connect ${DEVICE} &> /dev/null
       fi
-      # cd ~/development/releases/appium/matrix-android-appium-0.2.1/bin/ > /dev/null
-      cd ~/matrix-android-appium-0.2.1/bin/ > /dev/null
+      # Expects bin file to be always in ~/matrix-android-appium independent of version
+      # this rule is not for the client device
+      cd ~/matrix-android-appium/bin/ > /dev/null
       ./matrix-android-appium ${j} 50 ${PRINT_MATRIX} ${PM_INFO_FLASK}
       cd - > /dev/null
     else
