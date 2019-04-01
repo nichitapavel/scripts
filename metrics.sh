@@ -150,7 +150,7 @@ do
       # Expects bin file to be always in ~/matrix-android-appium independent of version
       # this rule is not for the client device
       cd ~/matrix-android-appium/bin/ > /dev/null
-      ./matrix-android-appium ${j} 50 ${PRINT_MATRIX} ${PM_INFO_FLASK}
+      ./matrix-android-appium -s ${j} -m 50 -e ${PM_INFO_FLASK} -d ${DEVICE} --system-port ${APPIUM_PORT} ${PRINT_MATRIX}
       cd - > /dev/null
     else
       echo "Unkown operating system. Exiting..."
