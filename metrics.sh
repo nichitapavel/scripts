@@ -37,10 +37,12 @@ case $1 in
     shift 2
   ;;
   --print-matrix)
+    # TODO This value will change once argument parsing is implemented
     PRINT_MATRIX='true'
     shift
   ;;
   --size-list)
+    # TODO implementation pending
     MATRIX_SIZE=''
     shift 2
   ;;
@@ -97,6 +99,9 @@ done
 #    --print-matrix
 #############################################################################################################
 
+# TODO most probably device will be required 99% of the executions for appium too, should refactor this
+# condition check
+# TODO --appium-port most_probably will always be required when executing android
 REQUIRED=(NAME PM_INFO_FLASK PMLIB_SERVER SYSTEM DEVICE LOOPS PORT DIRECTORY LINE)
 for arg in ${REQUIRED[@]};
 do
