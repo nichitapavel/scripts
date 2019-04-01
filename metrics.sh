@@ -163,10 +163,6 @@ done
 cp metrics.log "${DIRECTORY}/${NAME}/"
 cp ~/git/scripts/metrics.sh "${DIRECTORY}/${NAME}/"
 
-# ~/git/python-scripts/.venv/bin/python ~/git/python-scripts/rm_last_line.py -d "${DIRECTORY}/${NAME}/"
-# ~/git/python-scripts/.venv/bin/python ~/git/python-scripts/transform_timestamp.py -d "${DIRECTORY}/${NAME}/"
-# ~/git/plots/.venv/bin/python ~/git/plots/wattios.py -d "${DIRECTORY}/${NAME}/"
-
 #############################################################################################################
 
 # TODO Make a loops for amp & volt mesurements too
