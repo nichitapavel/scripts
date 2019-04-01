@@ -70,30 +70,31 @@ done
 
 #############################################################################################################
 # Valid call for linux systems:
-#  ./metrics-parser.sh
+#  ./metrics.sh
 #    -n test
-#    -l 2
 #    -d /home/pavel/data/testing/
-#    -p 5001
+#    -l 2
 #    --line 2
 #    --pmlib-server 10.209.2.79:6526
 #    --pm-info 10.209.3.126
-#    --print-matrix
+#    -p 5001
 #    -s linux
-#    --linux-device odroid@10.209.2.95
+#    --device odroid@10.209.2.95
+#    --print-matrix
 #
 # Valid call for android systems:
-#  ./metrics-parser.sh
+#  ./metrics.sh
 #    -n test
-#    -l 2
 #    -d /home/pavel/data/testing/
-#    -p 5001
+#    -l 2
 #    --line 2
 #    --pmlib-server 10.209.2.79:6526
 #    --pm-info 10.209.3.126
-#    --print-matrix
+#    -p 5001
 #    -s android
-#    --appium-device 10.209.2.95:5555
+#    --device 10.209.2.95:5555
+#    --appium-port 8201
+#    --print-matrix
 #############################################################################################################
 
 REQUIRED=(NAME PM_INFO_FLASK PMLIB_SERVER SYSTEM DEVICE LOOPS PORT DIRECTORY LINE)
