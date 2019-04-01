@@ -139,7 +139,7 @@ do
       ssh ${DEVICE} "~/matrix-jar-app/bin/matrix-jar-app ${j} 50 ${PRINT_MATRIX} ${PM_INFO_FLASK}"
     elif [ "${SYSTEM}" == "android" ]; then
       # matrix multiplication android odroid
-      ADB=$(echo ${DEVICE} | awk -F '.' '{print $4}')
+      ADB=$(echo ${DEVICE} | awk -F '.' '{print $2}')
       if [ -n "${ADB}" ]; then
         adb connect ${DEVICE} &> /dev/null
       fi
