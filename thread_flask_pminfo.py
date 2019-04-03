@@ -237,12 +237,26 @@ def main():
 
     if not os.path.exists(options.directory):
         os.makedirs(options.directory)
+    os.chdir(options.directory)
 
     global client, mode, pool, file, port, line
     mode = 'read'
-    file = options.directory + options.file
+    file = options.file
     port = options.port
     line = options.line - 1
+
+    file_log = logging.FileHandler(os.getcwd()+'/'+file[:-4]+'.log', mode='w')
+    file_log.setLevel(logging.INFO)
+    file_log.setFormatter(
+        logging.Formatter(
+            '[%(process)d][%(asctime)s.%(msecs)03d][%(name)s][%(levelname)s]%(message)s',
+            datefmt='%Y/%m/%d-%H:%M:%S'
+        )
+    )
+
+    logger.addHandler(
+        file_log
+    )
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect((options.server.split(":")[0], int(options.server.split(":")[1])))
