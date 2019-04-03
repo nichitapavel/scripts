@@ -30,6 +30,19 @@ def main():
 
     os.chdir(options.directory)
 
+    file_log = logging.FileHandler('transform_csv.log', mode='w')
+    file_log.setLevel(logging.INFO)
+    file_log.setFormatter(
+        logging.Formatter(
+            '[%(process)d][%(asctime)s.%(msecs)03d][%(name)s][%(levelname)s]%(message)s',
+            datefmt='%Y/%m/%d-%H:%M:%S'
+        )
+    )
+
+    logger.addHandler(
+        file_log
+    )
+
     for local_file in os.listdir(os.curdir):
         if not local_file.startswith('transformed') and local_file.endswith('.csv'):
             logger.info('[{0}][{1}]'.format(os.getcwd(), local_file))
