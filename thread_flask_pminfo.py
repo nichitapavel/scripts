@@ -56,8 +56,15 @@ def message():
             'operation': params.get('operation')[0]
         }
         marks.put(msg)
+        logger.info('[{0}][{1}][DEVICE:{2}][DEVICE_TIMESTAMP:{3}][OPERATION:{4}]'.format(
+            os.getcwd(),
+            file,
+            params.get('device')[0],
+            datetime.strftime(timestamp, '%Y/%m/%d-%H:%M:%S.%f'),
+            params.get('operation')[0]
+        ))
     except TypeError:
-        logging.warnings('The http query is malformed')
+        logger.exception('[The http query is malformed]')
     return ''
 
 
@@ -181,11 +188,8 @@ def receive_data(client, datatype):
 
     try:
         return struct.unpack(datatype, msg)[0]
-    except struct.error as err:
-        print('Error found! Here are the details:')
-        # noinspection SpellCheckingInspection
-        print('datatype: ' + datatype + '\t msg: ' + msg)
-        print err
+    except struct.error:
+        logger.exception('[Error found! Here are the details:]')
         client.close()
         sys.exit(1)
 
@@ -200,6 +204,7 @@ def send_all_data(client, msg):
 
 
 def main():
+    global logger
     logger = logging.getLogger('FLASK_PM_INFO')
 
     # Parsear linea de comandos
@@ -216,19 +221,19 @@ def main():
 
     exit_script = False
     if not options.server or len(options.server.split(":")) != 2:
-        logger.error('You must specify a pm_server SERVER:PORT!')
+        logger.error('[You must specify a pm_server SERVER:PORT!]')
         exit_script = True
     elif not options.directory:
-        logger.error('You must specify a working directory')
+        logger.error('[You must specify a working directory]')
         exit_script = True
     elif not options.file:
-        logger.error('You must specify a file to save data')
+        logger.error('[You must specify a file to save data]')
         exit_script = True
     elif not options.port:
-        logger.error('You must specify a local port')
+        logger.error('[You must specify a local port]')
         exit_script = True
     elif not options.line:
-        logger.error('You must specify a line to save power metrics')
+        logger.error('[You must specify a line to save power metrics]')
         exit_script = True
 
     if exit_script:

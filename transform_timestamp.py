@@ -9,13 +9,13 @@ from optparse import OptionParser
 logging.basicConfig(
     level=logging.INFO,
     # filename='thread-flask-pminfo.log',
-    format='[%(process)d][%(name)s][%(levelname)s][%(asctime)s.%(msecs)03d] %(message)s',
-    datefmt='%Y/%m/%d %H:%M:%S'
+    format='[%(process)d][%(asctime)s.%(msecs)03d][%(name)s][%(levelname)s]%(message)s',
+    datefmt='%Y/%m/%d-%H:%M:%S'
 )
 
 
 def main():
-    logger = logging.getLogger('TRANSFORM SCRIPT')
+    logger = logging.getLogger('TRANSFORM_CSV')
 
     # Parsear linea de comandos
     parser = OptionParser("usage: %prog -d|--directory DIRECTORY")
@@ -24,7 +24,7 @@ def main():
     (options, args) = parser.parse_args()
 
     if not options.directory:
-        logger.error('You must specify a working directory')
+        logger.error('[You must specify a working directory]')
         parser.print_help()
         sys.exit(-1)
 
@@ -32,7 +32,7 @@ def main():
 
     for local_file in os.listdir(os.curdir):
         if not local_file.startswith('transformed') and local_file.endswith('.csv'):
-            logger.info('{0}'.format(local_file))
+            logger.info('[{0}][{1}]'.format(os.getcwd(), local_file))
             ts = None
             ts_ln = None
             ts_first = None
