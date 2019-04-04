@@ -58,31 +58,34 @@ def main():
                     ts_ln = reader.line_num
             f.close()
 
-            tr_f = open(
-                'transformed-{}'.format(local_file),
-                'w'
-            )
-            header = reader.fieldnames
-            header.append('Transformed Time - XS')
-            header.append('Transformed Time - 00')
-            header.append('Number of measurement')
-            header.append('Sequential number of measurement')
-            writer = csv.DictWriter(tr_f, header)
-            writer.writeheader()
+            if ts:
+                tr_f = open(
+                    'transformed-{}'.format(local_file),
+                    'w'
+                )
+                header = reader.fieldnames
+                header.append('Transformed Time - XS')
+                header.append('Transformed Time - 00')
+                header.append('Number of measurement')
+                header.append('Sequential number of measurement')
+                writer = csv.DictWriter(tr_f, header)
+                writer.writeheader()
 
-            f = open(local_file, 'r')
-            reader = csv.DictReader(f)
-            for row in reader:
-                if reader.line_num == 2:
-                    ts_first = datetime.strptime(row.get('Time'), '%Y/%m/%d-%H:%M:%S.%f')
-                ts_op = datetime.strptime(row.get('Time'), '%Y/%m/%d-%H:%M:%S.%f')
-                row['Transformed Time - XS'] = (ts_op - ts).total_seconds()
-                row['Transformed Time - 00'] = ts_op - ts_first
-                row['Number of measurement'] = reader.line_num - ts_ln
-                row['Sequential number of measurement'] = reader.line_num - 1
-                writer.writerow(row)
-            f.close()
-            tr_f.close()
+                f = open(local_file, 'r')
+                reader = csv.DictReader(f)
+                for row in reader:
+                    if reader.line_num == 2:
+                        ts_first = datetime.strptime(row.get('Time'), '%Y/%m/%d-%H:%M:%S.%f')
+                    ts_op = datetime.strptime(row.get('Time'), '%Y/%m/%d-%H:%M:%S.%f')
+                    row['Transformed Time - XS'] = (ts_op - ts).total_seconds()
+                    row['Transformed Time - 00'] = ts_op - ts_first
+                    row['Number of measurement'] = reader.line_num - ts_ln
+                    row['Sequential number of measurement'] = reader.line_num - 1
+                    writer.writerow(row)
+                f.close()
+                tr_f.close()
+            else:
+                logger.warning('[{0}][{1}][XS operation not found, skip this file]'.format(os.getcwd(), local_file))
 
 
 if __name__ == "__main__":
