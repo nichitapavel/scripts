@@ -2,8 +2,6 @@
 
 # set -x
 
-# TODO Add a proper arguments parser
-
 SLEEP_PMLIB_STARTUP=10s
 SLEEP_START=10s
 SLEEP_FINISH=10s
@@ -38,7 +36,6 @@ case $1 in
     shift 2
   ;;
   --print-matrix)
-    # TODO This value will change once argument parsing is implemented
     PRINT_MATRIX='-p'
     shift
   ;;
@@ -71,6 +68,7 @@ case $1 in
     MODULE=$2
     shift 2
   ;;
+  # TODO Add help message
 esac
 done
 
@@ -190,10 +188,6 @@ do
     screen -X -S ${NAME} quit &> /dev/null
   done
 done
-
-# TODO create a log file with variables data.
-# cp metrics.log "${DIRECTORY}/${NAME}/"
-# cp ~/git/scripts/metrics.sh "${DIRECTORY}/${NAME}/"
 
 #############################################################################################################
 
