@@ -17,7 +17,6 @@ from flask import request, Flask
 
 logging.basicConfig(
     level=logging.INFO,
-    # filename='thread-flask-pminfo.log',
     format='[%(process)d][%(name)s][%(levelname)s] %(message)s'
 )
 
@@ -44,10 +43,6 @@ def message():
         timestamp = datetime.fromtimestamp(
             long(params.get('timestamp')[0]) / 1000.0
         )
-        # timestamp = datetime.datetime.strftime(
-        #     timestamp,
-        #     '%Y/%m/%d - %H:%M:%S.%f'
-        # )[:-2]
 
         msg = {
             'device': params.get('device')[0],
@@ -101,8 +96,6 @@ class PMInfoThread(threading.Thread):
         msg += dev_name
         msg += struct.pack("i", 0)
         send_all_data(client, msg)
-        count = 0
-        last_ten_thousands = 0.0
 
         f = open(file, 'w')
         f.write('Time,Power(mWatt),Operation\n')
@@ -116,38 +109,9 @@ class PMInfoThread(threading.Thread):
                     line_power = receive_data(client, "d")
                     lines_array.append("%.2f" % (line_power))
 
-                # wattage = 0.0
-                # if len(lines_array) != 0:
-                #     wattage = lines_array[0]
-                #     last_ten_thousands += float(wattage)
-                #     count += 1
-
-                # if count > 10000:
-                #     average = last_ten_thousands / count
-                #     if average < 6510:
-                #         self.logger.info('average below 6510')
-                #         self.logger.info('average %d with count %d', average, count)
-                #         pool[1].stop_request.set()
-                #         self.stop_request.set()
-                #
-                #     else:
-                #         self.logger.info('average higher 6510')
-                #         self.logger.info('average %d with count %d', average, count)
-                #         last_ten_thousands = 0.0
-                #         count = 0
-
-                # self.logger.info(wattage)
-
                 if not self.marks.empty():
                     mark = self.marks.get()
                     self.marks.task_done()
-                    # self.logger.info(
-                    #     '[device:' + mark.get('device') +
-                    #     '][device timestamp:' + mark.get('device timestamp') +
-                    #     '][local timestamp:' + str(mark.get('local timestamp')) +
-                    #     '][operation:' + mark.get('operation') +
-                    #     ']'
-                    # )
                     f.writelines(
                         "{0},{1},{2}\n".format(
                             datetime.now().strftime('%Y/%m/%d-%H:%M:%S.%f')[:-2],
