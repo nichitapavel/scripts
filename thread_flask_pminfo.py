@@ -74,7 +74,14 @@ class FlaskThread(threading.Thread):
         log.setLevel(logging.ERROR)
 
     def run(self):
-        app.run(host='0.0.0.0', port=port)
+        try:
+            app.run(host='0.0.0.0', port=port)
+        except Exception:
+            logger.exception('[Fatal error when starting flask server]')
+            for thread in threading.enumerate():
+                if thread.name is 'PMInfoThread':
+                    thread.join()
+            sys.exit(1)
 
     def join(self, timeout=None):
         self.stop_request.set()
