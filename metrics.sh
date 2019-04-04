@@ -12,6 +12,37 @@ PRINT_MATRIX=
 MATRIX_SIZE=(100)
 MODULE=50
 
+
+usage="metrics.sh [Arguments]
+Collect power usage data from a PMLib server. Currently only matrix multiplication is done.
+
+Required arguments:
+-n|--name NAME                - Name of the experiment. A directory with same NAME will be created to store data.
+-d|--directory DIRECTORY      - Path to where the collected data will be stored.
+-l|--loops LOOPS              - How many times an experiment must be executed.
+--line LINE                   - Number corresponding to the BeagleBoneBlack (BBB) UCM cape lines.
+                                Your device should be connected to this line, otherwiser data will be inconclusive.
+                                Current range: from 1 to 8.
+--pmlib-server PMLIB_SERVER   - IP and port of the BBB where pmlib server is running and UCM cape is connected.
+--pm-info PM_INFO_FLASK       - IP where flask server and pm_info tool are running.
+                                Most probably is the same device where metrics.sh will be run, but this ARGUMENT is
+                                passed to the clients that compute. Do NOT pass localhost or similar, only external 
+                                availabe IP's.
+-p|--port PORT                - Flask server port (PM_INFO_FLASK). Done this way to be able to run multiple PM_INFO_FLASK
+                                instances on the same device.
+-s|--system SYSTEM            - Operating system of the client that computes.
+--device DEVICE               - Address of the client that computes.
+                                For LINUX is ssh address, i.e.: user@10.26.25.32
+                                For ANDROID is adb serial number, i.e.: MSDPQSADXASD or 10.206.35.87:5555
+
+Optional arguments:
+--appium-port APPIUM_PORT     - When running multiple Android clients simultaneosly is better to provide a different
+                                port for each of them.
+--print-matrix PRINT_MATRIX   - Print on stdout matrix A, B and computed.
+--module MODULE               - Specify the highest possible number in matrix A and B, use integer type numbers.
+--help                        - Print this message."
+
+
 while [ "$1" != "" ]
 do
 case $1 in
@@ -68,7 +99,10 @@ case $1 in
     MODULE=$2
     shift 2
   ;;
-  # TODO Add help message
+  -h|--help)
+    echo "$usage" || exit 2
+    exit
+  ;;
 esac
 done
 
