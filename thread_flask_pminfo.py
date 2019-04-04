@@ -21,6 +21,9 @@ logging.basicConfig(
 )
 
 
+# TODO SHIT CODE: refactor all as soon as possible
+
+
 class Operation(Enum):
     AS = 'matrix A fill start'
     AF = 'matrix A fill finish'
