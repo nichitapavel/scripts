@@ -12,6 +12,7 @@ SLEEP_FINISH=10s
 PRINT_MATRIX=
 # MATRIX_SIZE=(100 200 300 400 500 600 700 800 900 1000)
 MATRIX_SIZE=(100)
+MODULE=50
 
 while [ "$1" != "" ]
 do
@@ -66,6 +67,10 @@ case $1 in
     APPIUM_PORT=$2
     shift 2
   ;;
+  --module)
+    MODULE=$2
+    shift 2
+  ;;
 esac
 done
 
@@ -118,7 +123,9 @@ done
 
 PM_INFO_FLASK=http://${PM_INFO_FLASK}:${PORT}/message
 
-LOGGING=(NAME DIRECTORY LOOPS LINE PMLIB_SERVER PM_INFO_FLASK PORT SYSTEM DEVICE APPIUM_PORT PRINT_MATRIX MATRIX_SIZE SLEEP_PMLIB_STARTUP SLEEP_START SLEEP_FINISH)
+LOGGING=(NAME DIRECTORY LOOPS LINE PMLIB_SERVER PM_INFO_FLASK PORT SYSTEM DEVICE\ 
+        APPIUM_PORT PRINT_MATRIX MATRIX_SIZE MODULE\ 
+        SLEEP_PMLIB_STARTUP SLEEP_START SLEEP_FINISH)
 LOG_FILE="${DIRECTORY}/${NAME}/metrics-${NAME}.log"
 mkdir -p "${DIRECTORY}/${NAME}/"
 touch ${LOG_FILE}
@@ -158,7 +165,7 @@ do
       # matrix multiplication linux odroid
       # Expects bin file to be always in ~/matrix-jar-app independent of version
       # TODO Replace "false" with ${PRINT_MATRIX}, for this must update jar app to accept named arguments
-      ssh ${DEVICE} "~/matrix-jar-app/bin/matrix-jar-app ${j} 50 false ${PM_INFO_FLASK}" | tee -a ${LOG_FILE}
+      ssh ${DEVICE} "~/matrix-jar-app/bin/matrix-jar-app ${j} ${MODULE} false ${PM_INFO_FLASK}" | tee -a ${LOG_FILE}
     elif [ "${SYSTEM}" == "android" ]; then
       # matrix multiplication android odroid
       ADB=$(echo ${DEVICE} | awk -F '.' '{print $2}')
@@ -168,7 +175,7 @@ do
       # Expects bin file to be always in ~/matrix-android-appium independent of version
       # this rule is not for the client device
       cd ~/matrix-android-appium/bin/ > /dev/null
-      ./matrix-android-appium -s ${j} -m 50 -e ${PM_INFO_FLASK} -d ${DEVICE} --system-port ${APPIUM_PORT} ${PRINT_MATRIX} | tee -a ${LOG_FILE}
+      ./matrix-android-appium -s ${j} -m ${MODULE} -e ${PM_INFO_FLASK} -d ${DEVICE} --system-port ${APPIUM_PORT} ${PRINT_MATRIX} | tee -a ${LOG_FILE}
       cd - > /dev/null
     else
       echo "Unkown operating system. Exiting..." | tee -a ${LOG_FILE}
