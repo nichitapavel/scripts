@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x
+# set -x
 
 # TODO Add a proper arguments parser
 
