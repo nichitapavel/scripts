@@ -4,9 +4,9 @@ set -x
 
 # TODO Add a proper arguments parser
 
-SLEEP_PMLIB_STARTUP=10
-SLEEP_START=10
-SLEEP_FINISH=10
+SLEEP_PMLIB_STARTUP=10s
+SLEEP_START=10s
+SLEEP_FINISH=10s
 
 # Default values
 PRINT_MATRIX='false'
@@ -118,12 +118,23 @@ done
 
 PM_INFO_FLASK=http://${PM_INFO_FLASK}:${PORT}/message
 
+LOGGING=(NAME DIRECTORY LOOPS LINE PMLIB_SERVER PM_INFO_FLASK PORT SYSTEM DEVICE APPIUM_PORT PRINT_MATRIX MATRIX_SIZE SLEEP_PMLIB_STARTUP SLEEP_START SLEEP_FINISH)
+LOG_FILE="${DIRECTORY}/${NAME}/metrics-${NAME}.log"
+mkdir -p "${DIRECTORY}/${NAME}/"
+touch ${LOG_FILE}
+echo "============== Variables ==============" | tee -a ${LOG_FILE}
+for arg in ${LOGGING[@]};
+do
+  echo "${arg}=${!arg}" | tee -a ${LOG_FILE}
+done
+echo -e | tee -a ${LOG_FILE}
+
 for i in $(seq 1 ${LOOPS});
 do
-  echo "============== Run: ${i} =============="
+  echo "============== Run: ${i} ==============" | tee -a ${LOG_FILE}
   for j in ${MATRIX_SIZE[@]}
   do
-    echo "============== Size: ${j} =============="
+    echo "============== Size: ${j} ==============" | tee -a ${LOG_FILE}
     if [ ${i} -lt 10 ]; then
       I=0${i}
     else I=${i}
@@ -146,7 +157,7 @@ do
     if [ "${SYSTEM}" == "linux" ]; then
       # matrix multiplication linux odroid
       # Expects bin file to be always in ~/matrix-jar-app independent of version
-      ssh ${DEVICE} "~/matrix-jar-app/bin/matrix-jar-app ${j} 50 ${PRINT_MATRIX} ${PM_INFO_FLASK}"
+      ssh ${DEVICE} "~/matrix-jar-app/bin/matrix-jar-app ${j} 50 ${PRINT_MATRIX} ${PM_INFO_FLASK}" | tee -a ${LOG_FILE}
     elif [ "${SYSTEM}" == "android" ]; then
       # matrix multiplication android odroid
       ADB=$(echo ${DEVICE} | awk -F '.' '{print $2}')
@@ -156,16 +167,16 @@ do
       # Expects bin file to be always in ~/matrix-android-appium independent of version
       # this rule is not for the client device
       cd ~/matrix-android-appium/bin/ > /dev/null
-      ./matrix-android-appium -s ${j} -m 50 -e ${PM_INFO_FLASK} -d ${DEVICE} --system-port ${APPIUM_PORT} ${PRINT_MATRIX}
+      ./matrix-android-appium -s ${j} -m 50 -e ${PM_INFO_FLASK} -d ${DEVICE} --system-port ${APPIUM_PORT} ${PRINT_MATRIX} | tee -a ${LOG_FILE}
       cd - > /dev/null
     else
-      echo "Unkown operating system. Exiting..."
+      echo "Unkown operating system. Exiting..." | tee -a ${LOG_FILE}
       screen -X -S ${NAME} quit &> /dev/null
       exit 1
     fi
 
     ###################################3
-    sleep ${SLEEP_FINISH}s
+    sleep ${SLEEP_FINISH}
     screen -X -S ${NAME} quit &> /dev/null
   done
 done
