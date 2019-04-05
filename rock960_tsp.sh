@@ -5,7 +5,7 @@ export TMPDIR=/var/log/tsp/rock960d
 export TS_MAXFINISHED=20
 export TS_SOCKET=/var/log/tsp/rock960
 
-#DIRECTORY=~/data/rock960-and71/rock960/
+# DIRECTORY=~/data/rock960-and71/rock960/
 DIRECTORY=~/data/testing/rock960/
 LOOPS=1
 LINE=3

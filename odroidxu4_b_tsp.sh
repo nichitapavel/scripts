@@ -9,7 +9,7 @@ JAR_DIR=~/development/releases/jar-app/
 ZIP=zip
 APP_DIRECTORY=matrix-jar-app
 
-#DIRECTORY=~/data/odroid-ubuntu-model-a/odroidxu4_b/
+# DIRECTORY=~/data/odroid-ubuntu-model-b/odroidxu4_b/
 DIRECTORY=~/data/testing/odroidxu4_b/
 LOOPS=1
 LINE=2

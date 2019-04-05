@@ -5,7 +5,7 @@ export TMPDIR=/var/log/tsp/odroidxu4_ad
 export TS_MAXFINISHED=20
 export TS_SOCKET=/var/log/tsp/odroidxu4_a
 
-#DIRECTORY=~/data/odroid-ubuntu-model-a/odroidxu4_a/
+# DIRECTORY=~/data/odroid-and444-model-a/odroidxu4_a/
 DIRECTORY=~/data/testing/odroidxu4_a/
 LOOPS=1
 LINE=1
