@@ -193,7 +193,7 @@ do
         -f data-${NAME}-${J}-${I}.csv \
         -r APCape8L
     ##############################
-    sleep ${SLEEP_START}s
+    sleep ${SLEEP_START}
 
     if [ "${SYSTEM}" == "linux" ]; then
       # matrix multiplication linux odroid
