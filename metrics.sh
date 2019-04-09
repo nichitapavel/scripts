@@ -211,10 +211,16 @@ do
       if [ -n "${ADB}" ]; then
         adb connect ${DEVICE} &> /dev/null
       fi
+
+      CMD="-s ${j} -m ${MODULE} -e ${PM_INFO_FLASK} -d ${DEVICE} ${PRINT_MATRIX}"
+      if [ -n "${APPIUM_PORT}" ]; then
+         CMD="${CMD} --system-port ${APPIUM_PORT}"
+      fi
+
       # Expects bin file to be always in ~/matrix-android-appium independent of version
       # this rule is not for the client device
       cd ~/matrix-android-appium/bin/ > /dev/null
-      ./matrix-android-appium -s ${j} -m ${MODULE} -e ${PM_INFO_FLASK} -d ${DEVICE} --system-port ${APPIUM_PORT} ${PRINT_MATRIX} | tee -a ${LOG_FILE}
+      ./matrix-android-appium ${CMD} | tee -a ${LOG_FILE}
       cd - > /dev/null
     else
       echo "Unkown operating system. Exiting..." | tee -a ${LOG_FILE}
