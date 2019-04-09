@@ -50,31 +50,6 @@ case $1 in
     NAME=$2
     shift 2
   ;;
-  --pm-info)
-    PM_INFO_FLASK=$2
-    shift 2
-  ;;
-  --pmlib-server)
-    PMLIB_SERVER=$2
-    shift 2
-  ;;
-  -s|--system)
-    SYSTEM=$2
-    shift 2
-  ;;
-  --device)
-    DEVICE=$2
-    shift 2
-  ;;
-  --print-matrix)
-    PRINT_MATRIX='-p'
-    shift
-  ;;
-  --size-list)
-    # TODO implementation pending
-    MATRIX_SIZE=''
-    shift 2
-  ;;
   -d|--directory)
     DIRECTORY=$2
     shift 2
@@ -87,16 +62,41 @@ case $1 in
     LINE=$2
     shift 2
   ;;
+  --pmlib-server)
+    PMLIB_SERVER=$2
+    shift 2
+  ;;
+  --pm-info)
+    PM_INFO_FLASK=$2
+    shift 2
+  ;;
   -p|--port)
     PORT=$2
+    shift 2
+  ;;
+  -s|--system)
+    SYSTEM=$2
+    shift 2
+  ;;
+  --device)
+    DEVICE=$2
     shift 2
   ;;
   --appium-port)
     APPIUM_PORT=$2
     shift 2
   ;;
+  --print-matrix)
+    PRINT_MATRIX='-p'
+    shift
+  ;;
   --module)
     MODULE=$2
+    shift 2
+  ;;
+  --size-list)
+    # TODO implementation pending
+    MATRIX_SIZE=''
     shift 2
   ;;
   -h|--help)
