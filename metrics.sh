@@ -30,17 +30,17 @@ Required arguments:
                                 availabe IP's.
 -p|--port PORT                - Flask server port (PM_INFO_FLASK). Done this way to be able to run multiple PM_INFO_FLASK
                                 instances on the same device.
--s|--system SYSTEM            - Operating system of the client that computes.
+-s|--system [linux|android]   - Operating system of the client that computes (SYSTEM).
 --device DEVICE               - Address of the client that computes.
                                 For LINUX is ssh address, i.e.: user@10.26.25.32
                                 For ANDROID is adb serial number, i.e.: MSDPQSADXASD or 10.206.35.87:5555
 
 Optional arguments:
 --appium-port APPIUM_PORT     - When running multiple Android clients simultaneosly is better to provide a different
-                                port for each of them.
+                                port for each of them. Recommended port range 8201-8299.
 --print-matrix PRINT_MATRIX   - Print on stdout matrix A, B and computed.
 --module MODULE               - Specify the highest possible number in matrix A and B, use integer type numbers.
---help                        - Print this message."
+-h|--help                     - Print this message."
 
 
 while [ "$1" != "" ]
