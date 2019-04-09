@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # set -x
+VERSION=v0.1
 
 SLEEP_PMLIB_STARTUP=10s
 SLEEP_START=10s
@@ -40,7 +41,8 @@ Optional arguments:
                                 port for each of them. Recommended port range 8201-8299.
 --print-matrix PRINT_MATRIX   - Print on stdout matrix A, B and computed.
 --module MODULE               - Specify the highest possible number in matrix A and B, use integer type numbers.
--h|--help                     - Print this message."
+-h|--help                     - Print this message.
+-v|--version                  - Print script version."
 
 
 while [ "$1" != "" ]
@@ -101,6 +103,10 @@ case $1 in
   ;;
   -h|--help)
     echo "$usage" || exit 2
+    exit
+  ;;
+  -v|--version)
+    echo "$0 ${VERSION}" || exit 2
     exit
   ;;
   *)
