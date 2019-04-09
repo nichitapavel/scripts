@@ -154,13 +154,8 @@ REQUIRED=(NAME PM_INFO_FLASK PMLIB_SERVER SYSTEM DEVICE LOOPS PORT DIRECTORY LIN
 for arg in ${REQUIRED[@]};
 do
   if [ -z "${!arg}" ]; then
-    if [ "${arg}" != "DEVICE" ]; then
-      echo "You're missing a required argument ${arg}"
-      exit 1
-    elif [ "${SYSTEM}" == "linux" ]; then
-      echo "Linux systems require a device argument ${arg}"
-      exit 1
-    fi
+    echo "You're missing a required argument ${arg}"
+    exit 1
   fi
 done
 
