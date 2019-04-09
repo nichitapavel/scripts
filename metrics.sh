@@ -199,7 +199,7 @@ do
       # matrix multiplication linux odroid
       # Expects bin file to be always in ~/matrix-jar-app independent of version
       # TODO Replace "false" with ${PRINT_MATRIX}, for this must update jar app to accept named arguments
-      ssh ${DEVICE} "~/matrix-jar-app/bin/matrix-jar-app ${j} ${MODULE} false ${PM_INFO_FLASK}" | tee -a ${LOG_FILE}
+      ssh ${DEVICE} "~/matrix-jar-app/bin/matrix-jar-app -s ${j} -m ${MODULE} ${PRINT_MATRIX} -e ${PM_INFO_FLASK}" | tee -a ${LOG_FILE}
     elif [ "${SYSTEM}" == "android" ]; then
       # matrix multiplication android odroid
       ADB=$(echo ${DEVICE} | awk -F '.' '{print $2}')
