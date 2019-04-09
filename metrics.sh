@@ -103,6 +103,11 @@ case $1 in
     echo "$usage" || exit 2
     exit
   ;;
+  *)
+    echo -e "ERROR: unknown argument, read help for more info.\n"
+    echo "$usage" || exit 2
+    exit
+  ;;
 esac
 done
 
