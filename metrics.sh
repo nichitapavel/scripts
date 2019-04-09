@@ -147,10 +147,8 @@ done
 #    --print-matrix
 #############################################################################################################
 
-# TODO most probably device will be required 99% of the executions for appium too, should refactor this
-# condition check
-# TODO --appium-port most_probably will always be required when executing android
-REQUIRED=(NAME PM_INFO_FLASK PMLIB_SERVER SYSTEM DEVICE LOOPS PORT DIRECTORY LINE)
+############################ Check requiered arguments ######################################################
+REQUIRED=(NAME DIRECTORY LOOPS LINE PMLIB_SERVER PM_INFO_FLASK PORT SYSTEM DEVICE)
 for arg in ${REQUIRED[@]};
 do
   if [ -z "${!arg}" ]; then
@@ -161,6 +159,7 @@ done
 
 PM_INFO_FLASK=http://${PM_INFO_FLASK}:${PORT}/message
 
+############################# Log to file arguments values ##################################################
 LOGGING=(NAME DIRECTORY LOOPS LINE\ 
         PMLIB_SERVER PM_INFO_FLASK PORT\ 
         SYSTEM DEVICE APPIUM_PORT\ 
@@ -176,6 +175,8 @@ do
 done
 echo -e | tee -a ${LOG_FILE}
 
+
+###################################### Do important stuff :) ################################################
 for i in $(seq 1 ${LOOPS});
 do
   echo "============== Run: ${i} ==============" | tee -a ${LOG_FILE}
@@ -202,17 +203,19 @@ do
     sleep ${SLEEP_START}
 
     if [ "${SYSTEM}" == "linux" ]; then
-      # matrix multiplication linux odroid
+      # Matrix multiplication linux
       # Expects bin file to be always in ~/matrix-jar-app independent of version
-      # TODO Replace "false" with ${PRINT_MATRIX}, for this must update jar app to accept named arguments
       ssh ${DEVICE} "~/matrix-jar-app/bin/matrix-jar-app -s ${j} -m ${MODULE} ${PRINT_MATRIX} -e ${PM_INFO_FLASK}" | tee -a ${LOG_FILE}
     elif [ "${SYSTEM}" == "android" ]; then
-      # matrix multiplication android odroid
+      # Matrix multiplication android
+
+      # In case device has tcp connection try to reconnect
       ADB=$(echo ${DEVICE} | awk -F '.' '{print $2}')
       if [ -n "${ADB}" ]; then
         adb connect ${DEVICE} &> /dev/null
       fi
 
+      # Was APPIUM_PORT specified?
       CMD="-s ${j} -m ${MODULE} -e ${PM_INFO_FLASK} -d ${DEVICE} ${PRINT_MATRIX}"
       if [ -n "${APPIUM_PORT}" ]; then
          CMD="${CMD} --system-port ${APPIUM_PORT}"
