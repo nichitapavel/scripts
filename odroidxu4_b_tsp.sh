@@ -13,14 +13,14 @@ APP_DIRECTORY=matrix-jar-app
 DIRECTORY=~/data/testing/odroidxu4_b/
 LOOPS=1
 LINE=2
-PMLIB_SERVER=10.209.2.79:6526
+PMLIB_SERVER=10.209.3.198:6526
 PM_INFO=10.209.3.126
 PM_INFO_PORT=5002
 SYSTEM=linux
-DEVICE=odroid@10.209.2.111
+DEVICE=odroid@10.209.3.77
 
 
-JAR_APP=matrix-jar-app-0.4.1-int
+JAR_APP=matrix-jar-app-0.5.1-int
 NAME=odroidxu4_b_int
 tsp scp ${JAR_DIR}/${JAR_APP}.${ZIP} ${DEVICE}:packages
 tsp ssh ${DEVICE} "unzip ~/packages/${JAR_APP}.${ZIP} && mv ${JAR_APP} ~/${APP_DIRECTORY}"
@@ -33,7 +33,7 @@ tsp ~/git/python-scripts/.venv/bin/python ~/git/python-scripts/transform_timesta
 tsp ~/git/plots/.venv/bin/python ~/git/plots/wattios.py -d "${DIRECTORY}/${NAME}/"
 tsp mv-data.sh -d ${DIRECTORY}/${NAME}
 
-JAR_APP=matrix-jar-app-0.4.1
+JAR_APP=matrix-jar-app-0.5.1-float
 NAME=odroidxu4_b_float
 tsp scp ${JAR_DIR}/${JAR_APP}.${ZIP} ${DEVICE}:packages
 tsp ssh ${DEVICE} "unzip ~/packages/${JAR_APP}.${ZIP} && mv ${JAR_APP} ~/${APP_DIRECTORY}"
@@ -46,7 +46,7 @@ tsp ~/git/python-scripts/.venv/bin/python ~/git/python-scripts/transform_timesta
 tsp ~/git/plots/.venv/bin/python ~/git/plots/wattios.py -d "${DIRECTORY}/${NAME}/"
 tsp mv-data.sh -d ${DIRECTORY}/${NAME}
 
-JAR_APP=matrix-jar-app-0.4
+JAR_APP=matrix-jar-app-0.5.1-roundup
 NAME=odroidxu4_b_roundup
 tsp scp ${JAR_DIR}/${JAR_APP}.${ZIP} ${DEVICE}:packages
 tsp ssh ${DEVICE} "unzip ~/packages/${JAR_APP}.${ZIP} && mv ${JAR_APP} ~/${APP_DIRECTORY}"

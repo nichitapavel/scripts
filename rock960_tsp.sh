@@ -9,7 +9,7 @@ export TS_SOCKET=/var/log/tsp/rock960
 DIRECTORY=~/data/testing/rock960/
 LOOPS=1
 LINE=3
-PMLIB_SERVER=10.209.2.79:6526
+PMLIB_SERVER=10.209.3.198:6526
 PM_INFO=10.209.3.126
 PM_INFO_PORT=5003
 SYSTEM=android
@@ -17,7 +17,7 @@ DEVICE=CBI9SBSFJM
 APPIUM_PORT=8203
 
 
-AND_APP=~/development/releases/android-app/app-debug-v1.4.1-int.apk
+AND_APP=~/development/releases/android-app/app-debug-v1.4.2-int.apk
 NAME=rock960_int
 tsp adb -s ${DEVICE} install -r -t ${AND_APP}
 tsp metrics.sh -n ${NAME} -d ${DIRECTORY} -l ${LOOPS} --line ${LINE}\
@@ -28,7 +28,7 @@ tsp ~/git/python-scripts/.venv/bin/python ~/git/python-scripts/transform_timesta
 tsp ~/git/plots/.venv/bin/python ~/git/plots/wattios.py -d "${DIRECTORY}/${NAME}/"
 tsp mv-data.sh -d ${DIRECTORY}/${NAME}
 
-AND_APP=~/development/releases/android-app/app-debug-v1.4.1.apk
+AND_APP=~/development/releases/android-app/app-debug-v1.4.2-float.apk
 NAME=rock960_float
 tsp adb -s ${DEVICE} install -r -t ${AND_APP}
 tsp metrics.sh -n ${NAME} -d ${DIRECTORY} -l ${LOOPS} --line ${LINE}\
@@ -39,7 +39,7 @@ tsp ~/git/python-scripts/.venv/bin/python ~/git/python-scripts/transform_timesta
 tsp ~/git/plots/.venv/bin/python ~/git/plots/wattios.py -d "${DIRECTORY}/${NAME}/"
 tsp mv-data.sh -d ${DIRECTORY}/${NAME}
 
-AND_APP=~/development/releases/android-app/app-debug-v1.4.apk
+AND_APP=~/development/releases/android-app/app-debug-v1.4.2-roundup.apk
 NAME=rock960_roundup
 tsp adb -s ${DEVICE} install -r -t ${AND_APP}
 tsp metrics.sh -n ${NAME} -d ${DIRECTORY} -l ${LOOPS} --line ${LINE}\
