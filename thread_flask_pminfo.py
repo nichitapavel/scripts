@@ -137,8 +137,9 @@ class PMInfoThread(threading.Thread):
                             lines_array[line]
                         )
                     )
-            except Empty:
-                continue
+            except:
+                logger.exception('[Error found! Here are the details:]')
+                pass
 
     def join(self, timeout=None):
         self.stop_request.set()
