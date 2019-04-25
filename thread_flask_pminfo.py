@@ -166,8 +166,7 @@ def receive_data(client, datatype):
         return struct.unpack(datatype, msg)[0]
     except struct.error:
         logger.exception('[Error found! Here are the details:]')
-        client.close()
-        sys.exit(1)
+        pass
 
 
 def send_all_data(client, msg):
