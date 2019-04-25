@@ -17,7 +17,8 @@ from flask import request, Flask
 
 logging.basicConfig(
     level=logging.INFO,
-    format='[%(process)d][%(name)s][%(levelname)s] %(message)s'
+    format='[%(process)d][%(asctime)s.%(msecs)03d][%(name)s][%(levelname)s]%(message)s',
+    datefmt='%Y/%m/%d-%H:%M:%S'
 )
 
 
