@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# set -x
-VERSION=v0.1
+#set -x
+VERSION=v0.2-beta-01
 
 SLEEP_PMLIB_STARTUP=10s
 SLEEP_START=10s
@@ -10,7 +10,7 @@ SLEEP_FINISH=10s
 # Default values
 PRINT_MATRIX=
 # MATRIX_SIZE=(100 200 300 400 500 600 700 800 900 1000)
-MATRIX_SIZE=(100)
+MATRIX_SIZE=(S W)
 MODULE=50
 
 
@@ -35,6 +35,8 @@ Required arguments:
 --device DEVICE               - Address of the client that computes.
                                 For LINUX is ssh address, i.e.: user@10.26.25.32
                                 For ANDROID is adb serial number, i.e.: MSDPQSADXASD or 10.206.35.87:5555
+-b|--benchmark [is|mg]        - NAS Benchmark to run.
+-t|--threads [is|mg]          - Number if threads to use when running NAS Benchmark.
 
 Optional arguments:
 --appium-port APPIUM_PORT     - When running multiple Android clients simultaneosly is better to provide a different
@@ -82,6 +84,14 @@ case $1 in
   ;;
   --device)
     DEVICE=$2
+    shift 2
+  ;;
+  -b|--benchmark)
+    BENCHMARK=$2
+    shift 2
+  ;;
+  -t|--threads)
+    THREADS=$2
     shift 2
   ;;
   --appium-port)
@@ -187,17 +197,14 @@ do
       I=0${i}
     else I=${i}
     fi
-    if [ "${j}" -lt "1000" ]; then
-      J=0${j}
-    else J=${j}
-    fi
+
     screen -dmS ${NAME} \
       ~/git/python-scripts/.venv/bin/python ~/git/python-scripts/thread_flask_pminfo.py \
         -l ${LINE} \
         -p ${PORT} \
         -s ${PMLIB_SERVER} \
         -d "${DIRECTORY}/${NAME}/" \
-        -f data-${NAME}-${J}-${I}.csv \
+        -f data-${NAME}-${j}-${I}.csv \
         -r APCape8L
     ##############################
     sleep ${SLEEP_START}
@@ -216,15 +223,21 @@ do
       fi
 
       # Was APPIUM_PORT specified?
-      CMD="-s ${j} -m ${MODULE} -e ${PM_INFO_FLASK} -d ${DEVICE} ${PRINT_MATRIX}"
+      CMD="-s ${j} -e ${PM_INFO_FLASK} -d ${DEVICE}"
       if [ -n "${APPIUM_PORT}" ]; then
          CMD="${CMD} --system-port ${APPIUM_PORT}"
+      fi
+      if [ -n "${BENCHMARK}" ]; then
+         CMD="${CMD} -b ${BENCHMARK}"
+      fi
+      if [ -n "${THREADS}" ]; then
+         CMD="${CMD} -t ${THREADS}"
       fi
 
       # Expects bin file to be always in ~/matrix-android-appium independent of version
       # this rule is not for the client device
-      cd ~/matrix-android-appium/bin/ > /dev/null
-      ./matrix-android-appium ${CMD} | tee -a ${LOG_FILE}
+      cd ~/benchmark-android-appium/bin/ > /dev/null
+      ./benchmark-android-appium ${CMD} | tee -a ${LOG_FILE}
       cd - > /dev/null
     else
       echo "Unkown operating system. Exiting..." | tee -a ${LOG_FILE}
