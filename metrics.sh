@@ -1,16 +1,13 @@
 #!/bin/bash
 
 #set -x
-VERSION=v0.2-beta-01
+VERSION=v0.2-beta-02
 
 SLEEP_PMLIB_STARTUP=10s
 SLEEP_START=10s
 SLEEP_FINISH=10s
 
 # Default values
-PRINT_MATRIX=
-# MATRIX_SIZE=(100 200 300 400 500 600 700 800 900 1000)
-MATRIX_SIZE=(S W)
 MODULE=50
 
 
@@ -37,6 +34,8 @@ Required arguments:
                                 For ANDROID is adb serial number, i.e.: MSDPQSADXASD or 10.206.35.87:5555
 -b|--benchmark [is|mg]        - NAS Benchmark to run.
 -t|--threads [is|mg]          - Number if threads to use when running NAS Benchmark.
+--size-list                   - A comma delimited string with the problem size (MATRIX_SIZE).
+                                i.e.: \"A,B,C\" or \"100,500,900\". For best results always use double quotes \"\" .
 
 Optional arguments:
 --appium-port APPIUM_PORT     - When running multiple Android clients simultaneosly is better to provide a different
@@ -108,7 +107,7 @@ case $1 in
   ;;
   --size-list)
     # TODO implementation pending
-    MATRIX_SIZE=''
+    IFS=',' read -r -a MATRIX_SIZE <<< $2
     shift 2
   ;;
   -h|--help)
@@ -174,6 +173,8 @@ LOGGING=(NAME DIRECTORY LOOPS LINE\
         PMLIB_SERVER PM_INFO_FLASK PORT\ 
         SYSTEM DEVICE APPIUM_PORT\ 
         PRINT_MATRIX MODULE\ 
+        MATRIX_SIZE[@]\ 
+        BENCHMARK THREADS\ 
         SLEEP_PMLIB_STARTUP SLEEP_START SLEEP_FINISH)
 LOG_FILE="${DIRECTORY}/${NAME}/metrics-${NAME}.log"
 mkdir -p "${DIRECTORY}/${NAME}/"
