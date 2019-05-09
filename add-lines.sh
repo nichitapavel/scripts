@@ -40,7 +40,7 @@ elif [ "${OS}" == "linux" ]; then
   grep "Benchmark:" ${FILE} | awk -F ':' '{print $3 $4 $5}' | awk '{print $1","$4","$6}' > ${BENCH}
   grep "Time in seconds" ${FILE} | awk -F '=' '{print $2}' | awk '{print $1}' > ${TIME}
   grep "Mops" ${FILE} | awk -F '=' '{print $2}' | awk '{print $1}' > ${MOPS}
-  wc -l ${BENCH} ${CLASS} ${TIME} ${MOPS} ${THREAD}
+  wc -l ${BENCH} ${TIME} ${MOPS}
   paste -d "," ${BENCH} ${TIME} ${MOPS} | awk '$0="'${DEVICE}','${OS}',"$0' | tr '[:upper:]' '[:lower:]' > ${DEVICE}-${OS}-${NUMBER}.csv
 fi
 
