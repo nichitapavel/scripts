@@ -1,0 +1,95 @@
+NAME=hikey970
+DIR=${NAME}_bt1 
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_bt2
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_bt4
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_is1 
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_is2
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_is4
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_mg1 
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_mg2
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_mg4
+cp $DIR/transformed-csv/transformed* $DIR/.
+
+
+NAME=rock960
+DIR=${NAME}_bt1 
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_bt2
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_bt4
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_is1 
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_is2
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_is4
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_mg1 
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_mg2
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_mg4
+cp $DIR/transformed-csv/transformed* $DIR/.
+
+
+NAME=odroidxu4_a
+DIR=${NAME}_bt1 
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_bt2
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_bt4
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_is1 
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_is2
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_is4
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_mg1 
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_mg2
+cp $DIR/transformed-csv/transformed* $DIR/.
+DIR=${NAME}_mg4
+cp $DIR/transformed-csv/transformed* $DIR/.
+
+
+
+#################### ANDROID #####################
+find . -type f | grep "metrics" | cut -b 1,2 --complement
+grep "Benchmarks\|Time in seconds\|Mops total\|Class\|Threads requested" hikey970-lnx/hikey970-lnx_bt1/log/metrics-hikey970-lnx_bt1.log
+
+
+grep "Benchmarks\|Time in seconds\|Mops total\|Class\|Threads requested" $(find . -type f | grep "metrics" | cut -b 1,2 --complement) > data.log
+grep Benchmarks data.log | awk -F ')' '{print $2}' | awk '{print $1}' > bench.txt
+grep "Time in seconds" data.log | awk -F '=' '{print $2}' | awk '{print $1}' > time.txt
+grep "Mops" data.log | awk -F '=' '{print $2}' | awk '{print $1}' > mops.txt
+grep "Class" data.log | awk -F '=' '{print $2}' | awk '{print $1}' > class.txt
+
+grep -n -A 1 Mops data.log | grep Bench | awk -F '-' '{print $1}' | sort -r
+add-lines.sh
+grep "Threads" data.log | awk -F '=' '{print $2}' | awk '{print $1}' > threads.txt
+
+wc -l bench.txt class.txt time.txt mops.txt threads.txt
+
+paste -d "," bench.txt class.txt threads.txt time.txt mops.txt | awk '$0="hikey970,android,"$0' | tr '[:upper:]' '[:lower:]' > hikey970-android.txt
+
+
+#################### LINUX #####################
+find . -type f | grep "metrics" | cut -b 1,2 --complement
+grep "DEVICE\|Run\|Benchmarks\|Time in seconds\|Mops total\|Class\|Threads requested" hikey970-lnx/hikey970-lnx_bt1/log/metrics-hikey970-lnx_bt1.log
+
+grep Benchmark data.log | awk -F ':' '{print $3 $4 $5}' | awk '{print $1","$4","$6}' > class.txt
+grep "Benchmark:" data.log | awk -F ':' '{print $3 $4 $5}' | awk '{print $1","$4","$6}' > class.txt
+grep "Time in seconds" data.log | awk -F '=' '{print $2}' | awk '{print $1}' > time.txt
+grep "Mops" data.log | awk -F '=' '{print $2}' | awk '{print $1}' > mops.txt
+
+paste class.txt time.txt mops.txt -d ","
+awk '$0="hikey970,linux,"$0' paste.txt > data.log
