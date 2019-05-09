@@ -213,7 +213,7 @@ do
     if [ "${SYSTEM}" == "linux" ]; then
       # Matrix multiplication linux
       # Expects bin file to be always in ~/matrix-jar-app independent of version
-      ssh ${DEVICE} "~/matrix-jar-app/bin/matrix-jar-app -s ${j} -m ${MODULE} ${PRINT_MATRIX} -e ${PM_INFO_FLASK}" | tee -a ${LOG_FILE}
+      ssh ${DEVICE} "JAVA_HOME=/opt/jdk1.8.0_202/jre JAVA_OPTS=\"-Xms512m\" ~/benchmark-jar-app/bin/benchmark-jar-app -s ${j} -b ${BENCHMARK} -t ${THREADS} -e ${PM_INFO_FLASK}" | tee -a ${LOG_FILE}
     elif [ "${SYSTEM}" == "android" ]; then
       # Matrix multiplication android
 
