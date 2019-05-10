@@ -93,3 +93,6 @@ grep "Mops" data.log | awk -F '=' '{print $2}' | awk '{print $1}' > mops.txt
 
 paste class.txt time.txt mops.txt -d ","
 awk '$0="hikey970,linux,"$0' paste.txt > data.log
+
+################### CONCATENAR ##################
+cat head.csv hikey970-* rock960-* odroidxu4-* | tr '[:upper:]' '[:lower:]' > all.csv
