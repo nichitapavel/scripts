@@ -96,3 +96,7 @@ awk '$0="hikey970,linux,"$0' paste.txt > data.log
 
 ################### CONCATENAR ##################
 cat head.csv hikey970-* rock960-* odroidxu4-* | tr '[:upper:]' '[:lower:]' > all.csv
+
+
+################# WINDOWS POWERSHELL
+#### Get-ChildItem tra* | Rename-Item -NewName { $_.name -Replace 'tr','12tr' }
