@@ -1,8 +1,18 @@
+"""
+Reads an .csv file with format:
+device,os,benchmark,size,threads,seconds,mops
+and sums up all seconds and/or mops values for
+combination of "device,os,benchmark,size,threads"
+that match, stores this in data variable.
+If a combination is not in data variable it will not
+stored.
+
+"""
+
 import csv
 import logging
 import sys
 
-from IPython.core import logger
 from optparse import OptionParser
 
 logging.basicConfig(
@@ -34,7 +44,7 @@ THREADS4 = '4'
 THREADS8 = '8'
 
 
-################## ANDROID
+# ANDROID
 hikey970_android_is_b_1='hikey970_android_is_b_1'
 hikey970_android_is_b_2='hikey970_android_is_b_2'
 hikey970_android_is_b_4='hikey970_android_is_b_4'
@@ -66,7 +76,7 @@ rock960_android_bt_w_2='rock960_android_bt_w_2'
 rock960_android_bt_w_4='rock960_android_bt_w_4'
 
 
-################## LINUX
+# LINUX
 hikey970_linux_is_b_1='hikey970_linux_is_b_1'
 hikey970_linux_is_b_2='hikey970_linux_is_b_2'
 hikey970_linux_is_b_4='hikey970_linux_is_b_4'
@@ -147,6 +157,7 @@ data = {
     odroidxu4_linux_bt_w_8: []
 }
 
+
 def open_csv(file):
     f = open(file)
     reader = csv.DictReader(f)
@@ -160,6 +171,7 @@ def open_csv(file):
         if len(values) != 0:
             logger.info(f'[{item}][{media(values)}]')
 
+
 def cond_func(row, device, os, benchmark, size, threads):
     if row.get('device') == device:
         if row.get('os') == os:
@@ -168,9 +180,10 @@ def cond_func(row, device, os, benchmark, size, threads):
                     if row.get('threads') == threads:
                         return float(row.get('seconds'))
 
+
 def return_func(row):
     device = row.get('device')
-    os= row.get('os')
+    os = row.get('os')
     benchmark = row.get('benchmark')
     size = row.get('size')
     threads = row.get('threads')
@@ -182,6 +195,7 @@ def media(data):
     for item in data:
         sum += item
     return sum / len(data)
+
 
 def main():
     # Parsear linea de comandos
