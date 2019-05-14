@@ -20,12 +20,10 @@ def open_csv(file):
     data = {'mw': [], 'time': [], 'micro_s': [datetime.timedelta(0)]}
     is_xs = False
     is_xf = False
-    previous_time = 0
 
     for row in reader:
         if not is_xs:
             is_xs = set_xs(row)
-            previous_time = row.get( row.get('Transformed Time - 00') )
         elif not is_xf:
             is_xf = set_xf(row)
             data['mw'].append( row.get('Power(mWatt)') )
