@@ -5,6 +5,7 @@ import sys
 import datetime
 from optparse import OptionParser
 
+
 logging.basicConfig(
     level=logging.INFO,
     # filename='thread-flask-pminfo.log',
@@ -106,8 +107,16 @@ def main():
         sys.exit(-1)
 
     os.chdir(options.directory)
+    xsxf_folder = '../xsxf'
 
-    file_log = logging.FileHandler('xsxf.log', mode='w')
+    xsxf_list = []
+    try:
+        xsxf_list = os.listdir(xsxf_folder)
+    except FileNotFoundError:
+        logger.info('[XSXF folder not found, creating one]')
+        os.mkdir(xsxf_folder)
+
+    file_log = logging.FileHandler(f'{xsxf_folder}/xsxf.log', mode='w')
     file_log.setLevel(logging.INFO)
     file_log.setFormatter(
         logging.Formatter(
@@ -120,20 +129,17 @@ def main():
         file_log
     )
 
-    # xsxf_list = xsxf_files(os.curdir)
-
     for f in os.listdir(os.curdir):
         # if f.startswith('transformed') and f.endswith('.csv'):
         if 'transformed' in f and f.endswith('.csv'):
-            #if f not in xsxf_list:
+            if f'{f}.xsxf' not in xsxf_list:
                 logger.info(f'[{os.getcwd()}][{f}]')
                 data = open_csv(options.directory + f)
                 if data is not None:
                     calculate_time(data)
-                    write_to_file(data, options.directory + f)
-                    # logger.info(f'[{os.getcwd()}][{f}][{energy_consumed(data)}][joules]')
-                # logger.info(f'[{os.getcwd()}][Type.SEQUENTIAL][{f}]')
-                # paint(options.directory + f, Type.SEQUENTIAL)
+                    write_to_file(data, f'{xsxf_folder}/{f}')
+            else:
+                logger.info(f'[{os.getcwd()}][{f}][File exists, skipping...]')
 
 
 if __name__ == "__main__":
