@@ -50,7 +50,7 @@ def main():
 
     os.chdir(options.directory)
 
-    file_log = logging.FileHandler('xsxf.log', mode='w')
+    file_log = logging.FileHandler('energy.log', mode='w')
     file_log.setLevel(logging.INFO)
     file_log.setFormatter(
         logging.Formatter(
