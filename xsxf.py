@@ -30,6 +30,8 @@ def open_csv(file):
             data['time'].append( row.get('Transformed Time - 00') )
         else:
             return data
+
+    logger.error(f'[{file}][XS or XF operation not found, skipping...]')
     return None
 
 
