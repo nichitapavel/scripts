@@ -36,6 +36,53 @@ def energy_consumed(data):
     return energy / 1000000000, time / 1000000
 
 
+def write_csv(data):
+    file = open('energy.csv', 'w')
+    header = ['device', 'os', 'benchmark', 'threads', 'size', 'joules', 'seconds']
+    writer = csv.DictWriter(file, header)
+    writer.writeheader()
+    for item in data:
+        filename = item.get('filename').lower()
+        device, osys = get_device_os(filename)
+        row = {
+            'device': device,
+            'os': osys,
+            'benchmark': filename[-17:-15],
+            'threads': filename[-15:-14],
+            'size': filename[-13:-12],
+            'joules': item.get('energy'),
+            'seconds': item.get('time')
+        }
+        writer.writerow(row)
+    file.close()
+
+
+# TODO File names will change to be more standard
+def get_device_os(name):
+    android = 'android'
+    linux = 'linux'
+    f = name[20:-17]
+    if f.startswith('o'):
+        device = 'odroidxu4'
+        if f.endswith('a_'):
+            os = android
+        elif f.endswith('b_'):
+            os = linux
+    elif f.startswith('h'):
+        device = 'hikey970'
+        if f.endswith('_'):
+            os = android
+        elif f.endswith('lnx_'):
+            os = linux
+    elif f.startswith('r'):
+        device = 'rock960'
+        if f.endswith('_'):
+            os = android
+        elif f.endswith('lnx_'):
+            os = linux
+    return device, os
+
+
 def main():
     # Parsear linea de comandos
     parser = OptionParser("usage: %prog -d|--directory DIRECTORY")
@@ -63,12 +110,18 @@ def main():
         file_log
     )
 
+    csv_data = []
+
     for f in os.listdir(os.curdir):
         if f.endswith('.xsxf'):
-                data = open_csv(options.directory + f)
-                if data is not None:
-                    energy, total_time = energy_consumed(data)
-                    logger.info(f'[{os.getcwd()}][{f}][{energy} joules][{total_time} seconds]')
+            data = open_csv(options.directory + f)
+            if data is not None:
+                energy, total_time = energy_consumed(data)
+                csv_data.append({'filename': f, 'energy': energy, 'time': total_time})
+                logger.info(f'[{os.getcwd()}][{f}][{energy} joules][{total_time} seconds]')
+
+    logger.info(f'[{os.getcwd()}][Writing to csv]')
+    write_csv(csv_data)
 
 
 if __name__ == "__main__":
