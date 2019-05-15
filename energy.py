@@ -1,6 +1,7 @@
 import csv
 import logging
 import os
+import platform
 import sys
 from optparse import OptionParser
 
@@ -37,7 +38,10 @@ def energy_consumed(data):
 
 
 def write_csv(data):
-    file = open('energy.csv', 'w')
+    if platform.system() is 'Windows':
+        file = open('energy.csv', 'w', newline='')
+    else:
+        file = open('energy.csv', 'w')
     header = ['device', 'os', 'benchmark', 'threads', 'size', 'joules', 'seconds']
     writer = csv.DictWriter(file, header)
     writer.writeheader()
@@ -65,22 +69,22 @@ def get_device_os(name):
     if f.startswith('o'):
         device = 'odroidxu4'
         if f.endswith('a_'):
-            os = android
+            osys = android
         elif f.endswith('b_'):
-            os = linux
+            osys = linux
     elif f.startswith('h'):
         device = 'hikey970'
-        if f.endswith('_'):
-            os = android
-        elif f.endswith('lnx_'):
-            os = linux
+        if f.endswith('lnx_'):
+            osys = linux
+        elif f.endswith('_'):
+            osys = android
     elif f.startswith('r'):
         device = 'rock960'
-        if f.endswith('_'):
-            os = android
-        elif f.endswith('lnx_'):
-            os = linux
-    return device, os
+        if f.endswith('lnx_'):
+            osys = linux
+        elif f.endswith('_'):
+            osys = android
+    return device, osys
 
 
 def main():
