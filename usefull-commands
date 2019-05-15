@@ -96,3 +96,16 @@ awk '$0="hikey970,linux,"$0' paste.txt > data.log
 
 ################### CONCATENAR ##################
 cat head.csv hikey970-* rock960-* odroidxu4-* | tr '[:upper:]' '[:lower:]' > all.csv
+
+
+##############################################################
+##############################################################
+##############################################################
+FILES=$(find ../../hikey970-android/ -type f | grep transformed)
+
+### rename files that start with "transformed" to "02-transformed...."
+for i in transformed*; do mv ${i} 02-${i}; done
+
+### csv & beauty printing speedups.log
+awk -F '[' '{print $6" "$7" "$10}' speedups.log | awk -F ']' '{print $1""$2""$3}' | awk '{print $1","$3","$5}' | column -t | sort
+awk -F '[' '{print $6" "$7" "$10}' speedups.log | awk -F ']' '{print $1""$2""$3}' | column -t | sort
