@@ -109,3 +109,7 @@ for i in transformed*; do mv ${i} 02-${i}; done
 ### csv & beauty printing speedups.log
 awk -F '[' '{print $6" "$7" "$10}' speedups.log | awk -F ']' '{print $1""$2""$3}' | awk '{print $1","$3","$5}' | column -t | sort
 awk -F '[' '{print $6" "$7" "$10}' speedups.log | awk -F ']' '{print $1""$2""$3}' | column -t | sort
+
+
+################# WINDOWS POWERSHELL
+#### Get-ChildItem tra* | Rename-Item -NewName { $_.name -Replace 'tr','12tr' }
