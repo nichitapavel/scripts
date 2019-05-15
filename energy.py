@@ -38,7 +38,10 @@ def energy_consumed(data):
 
 
 def write_csv(data):
-    file = open('energy.csv', 'w')
+    if platform.system() is 'Windows':
+        file = open('energy.csv', 'w', newline='')
+    else:
+        file = open('energy.csv', 'w')
     header = ['device', 'os', 'benchmark', 'threads', 'size', 'joules', 'seconds']
     writer = csv.DictWriter(file, header)
     writer.writeheader()
