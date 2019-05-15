@@ -1,6 +1,7 @@
 import csv
 import logging
 import os
+import platform
 import sys
 from optparse import OptionParser
 
@@ -65,22 +66,22 @@ def get_device_os(name):
     if f.startswith('o'):
         device = 'odroidxu4'
         if f.endswith('a_'):
-            os = android
+            osys = android
         elif f.endswith('b_'):
-            os = linux
+            osys = linux
     elif f.startswith('h'):
         device = 'hikey970'
-        if f.endswith('_'):
-            os = android
-        elif f.endswith('lnx_'):
-            os = linux
+        if f.endswith('lnx_'):
+            osys = linux
+        elif f.endswith('_'):
+            osys = android
     elif f.startswith('r'):
         device = 'rock960'
-        if f.endswith('_'):
-            os = android
-        elif f.endswith('lnx_'):
-            os = linux
-    return device, os
+        if f.endswith('lnx_'):
+            osys = linux
+        elif f.endswith('_'):
+            osys = android
+    return device, osys
 
 
 def main():
