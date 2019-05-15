@@ -169,7 +169,14 @@ def open_csv(file):
 
     for item, values in data.items():
         if len(values) != 0:
-            logger.info(f'[{item}][{media(values)}]')
+            avg = media(values)
+            max_value = max(values)
+            min_value = min(values)
+            plus_variation = "%.2f" % ((max_value - avg) / avg * 100)
+            minus_variation = "%.2f" % ((min_value - avg) / avg * 100)
+            logger.info(
+                f'[{item}][AVG: {avg}][MAX:{max_value}][MIN: {min_value}][VAR: {plus_variation}/{minus_variation}]'
+            )
 
 
 def cond_func(row, device, os, benchmark, size, threads):
