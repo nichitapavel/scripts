@@ -11,6 +11,7 @@ stored.
 
 import csv
 import logging
+import os
 import sys
 
 from optparse import OptionParser
@@ -216,6 +217,8 @@ def main():
         parser.print_help()
         sys.exit(-1)
 
+    os.chdir('/'.join(options.file.split('/')[0:-1]))
+
     file_log = logging.FileHandler('speedups.log', mode='w')
     file_log.setLevel(logging.INFO)
     file_log.setFormatter(
@@ -225,11 +228,11 @@ def main():
         )
     )
 
-    open_csv(options.file)
-
     logger.addHandler(
         file_log
     )
+
+    open_csv(options.file)
 
 
 if __name__ == "__main__":
