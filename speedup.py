@@ -107,12 +107,15 @@ odroidxu4_linux_bt_w_8='odroidxu4_linux_bt_w_8'
 rock960_linux_is_b_1='rock960_linux_is_b_1'
 rock960_linux_is_b_2='rock960_linux_is_b_2'
 rock960_linux_is_b_4='rock960_linux_is_b_4'
+rock960_linux_is_b_6='rock960_linux_is_b_6'
 rock960_linux_mg_b_1='rock960_linux_mg_b_1'
 rock960_linux_mg_b_2='rock960_linux_mg_b_2'
 rock960_linux_mg_b_4='rock960_linux_mg_b_4'
+rock960_linux_mg_b_6='rock960_linux_mg_b_6'
 rock960_linux_bt_w_1='rock960_linux_bt_w_1'
 rock960_linux_bt_w_2='rock960_linux_bt_w_2'
 rock960_linux_bt_w_4='rock960_linux_bt_w_4'
+rock960_linux_bt_w_6='rock960_linux_bt_w_6'
 
 data = {
     hikey970_android_is_b_1: [],
@@ -169,12 +172,15 @@ data = {
     rock960_linux_is_b_1: [],
     rock960_linux_is_b_2: [],
     rock960_linux_is_b_4: [],
+    rock960_linux_is_b_6: [],
     rock960_linux_mg_b_1: [],
     rock960_linux_mg_b_2: [],
     rock960_linux_mg_b_4: [],
+    rock960_linux_mg_b_6: [],
     rock960_linux_bt_w_1: [],
     rock960_linux_bt_w_2: [],
-    rock960_linux_bt_w_4: []
+    rock960_linux_bt_w_4: [],
+    rock960_linux_bt_w_6: []
 }
 
 
