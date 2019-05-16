@@ -184,14 +184,22 @@ data = {
 }
 
 
-def open_csv(file):
+def open_csv(file, data_type):
     f = open(file)
     reader = csv.DictReader(f)
+
+    if data_type == 'energy':
+        csv_type = 'joules'
+    elif data_type == 'time':
+        csv_type = 'seconds'
+    else:
+        logger.error(f'[Unknown type: {data_type}]')
+        sys.exit(1)
 
     for row in reader:
         item = return_func(row)
         if data.get(item) is not None:
-            data.get(item).append(float(row.get('seconds')))
+            data.get(item).append(float(row.get(csv_type)))
 
     for item, values in data.items():
         if len(values) != 0:
@@ -201,7 +209,7 @@ def open_csv(file):
             plus_variation = "%.2f" % ((max_value - avg) / avg * 100)
             minus_variation = "%.2f" % ((min_value - avg) / avg * 100)
             logger.info(
-                f'[{item}][AVG: {avg}][MAX:{max_value}][MIN: {min_value}][VAR: {plus_variation}/{minus_variation}]'
+                f'[{data_type}][{item}][AVG: {avg}][MAX:{max_value}][MIN: {min_value}][VAR: {plus_variation}/{minus_variation}]'
             )
 
 
@@ -232,13 +240,18 @@ def media(data):
 
 def main():
     # Parsear linea de comandos
-    parser = OptionParser("usage: %prog -f|--file FILE")
+    parser = OptionParser("usage: %prog -f|--file FILE -t|--type TYPE")
     parser.add_option("-f", "--file", action="store", type="string", dest="file")
+    parser.add_option("-t", "--type", action="store", type="string", dest="type")
 
     (options, args) = parser.parse_args()
 
     if not options.file:
         logger.error('[You must specify a .csv file]')
+        parser.print_help()
+        sys.exit(-1)
+    if not options.file:
+        logger.error('[You must specify a type: time or energy]')
         parser.print_help()
         sys.exit(-1)
 
@@ -257,7 +270,7 @@ def main():
         file_log
     )
 
-    open_csv(options.file)
+    open_csv(options.file, options.type)
 
 
 if __name__ == "__main__":
