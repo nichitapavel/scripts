@@ -129,7 +129,9 @@ def main():
         file_log
     )
 
-    for f in os.listdir(os.curdir):
+    files = os.listdir(os.curdir)
+    files.sort()
+    for f in files:
         # if f.startswith('transformed') and f.endswith('.csv'):
         if 'transformed' in f and f.endswith('.csv'):
             if f'{f}.xsxf' not in xsxf_list:

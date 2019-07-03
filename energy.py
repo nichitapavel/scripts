@@ -116,7 +116,9 @@ def main():
 
     csv_data = []
 
-    for f in os.listdir(os.curdir):
+    files = os.listdir(os.curdir)
+    files.sort()
+    for f in files:
         if f.endswith('.xsxf'):
             data = open_csv(options.directory + f)
             if data is not None:
