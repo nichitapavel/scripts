@@ -3,7 +3,7 @@ import logging
 import os
 import sys
 from optparse import OptionParser
-from common import read_timestamp, CSV_TIME, CSV_POWER, CSV_OP
+from common import read_timestamp, CSV_TIME, CSV_POWER, CSV_OP, is_valid_last_row
 
 logging.basicConfig(
     level=logging.INFO,
@@ -44,9 +44,9 @@ def main():
 
     cwd = os.getcwd()
     for local_file in os.listdir(os.curdir):
-        # if not local_file.startswith('transformed') and local_file.endswith('.csv'):
+        if not local_file.startswith('transformed') and local_file.endswith('.csv'):
         # if local_file == 'data-odroidxu4_a_mg4-B-087.csv':
-        if local_file == 'test_file.csv':
+        # if local_file == 'test_file.csv':
             logger.info(f'[{cwd}][{local_file}]')
             data = {'time': [], 'mw': [], 'op': [], 'time_xs': [], 'time_00': [], 'ms': []}
             data_time = data.get('time')
@@ -58,28 +58,32 @@ def main():
             xs_zone = False
             xf_zone = False
             ts_xs = None
-            ts_first = None
             f = open(local_file, 'r')
             reader = csv.DictReader(f)
             csv_list = list(reader)
+            ts_first = read_timestamp(
+                csv_list[0][CSV_TIME]
+            )
+            if not is_valid_last_row(csv_list[-2:]):
+                del csv_list[-1]
             # reader.fieldnames
             # list(reader)  # converts a csv reader to a list of it's values
-            for row in reader:
-                time = row.get(CSV_TIME)
-                power = row.get(CSV_POWER)
-                op = row.get(CSV_OP)
+            for i in range(0, len(csv_list)):
+                time = csv_list[i][CSV_TIME]
+                power = csv_list[i][CSV_POWER]
+                op = csv_list[i][CSV_OP]
                 ms = ''
                 ts_op = read_timestamp(time)
 
-                if reader.line_num == 2:
-                    ts_first = read_timestamp(time)
-                if xs_zone and not xf_zone:
-                    ms = (read_timestamp(time) - read_timestamp(data_time[-1])).microseconds
                 if op == 'XS':
                     ts_xs = read_timestamp(time)
                     xs_zone = True
                 if op == 'XF':
                     xf_zone = True
+                if xs_zone and not xf_zone:
+                    ms = (
+                            read_timestamp(time) - read_timestamp(data_time[-1])
+                    ).microseconds
 
                 data_time.append(time)
                 data_mw.append(power)
