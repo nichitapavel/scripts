@@ -10,6 +10,7 @@ CSV_TIME = 'Time'
 CSV_POWER = 'Power(mWatt)'
 CSV_OP = 'Operation'
 
+
 # Files naming scheme:
 # XXXXXXXXX_<device>_<bench>_<class>_<threads>[_<iteration>].<suffix>
 # Where XXXXXXXXX is whatever, it must not contain '_' char
@@ -33,3 +34,12 @@ def read_timestamp(timestamp):
         except ValueError:
             pass
     return None
+
+
+def is_valid_last_row(rows):
+    if rows[-2][CSV_OP] is None or \
+            len(rows[-2][CSV_TIME]) != len(rows[-2][CSV_TIME]) or \
+            rows[-1][CSV_POWER] is None or \
+            len(rows[-2][CSV_POWER]) != len(rows[-2][CSV_POWER]):
+        return False
+    return True
