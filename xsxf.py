@@ -5,6 +5,7 @@ import sys
 import datetime
 from optparse import OptionParser
 
+from common import read_timestamp
 
 logging.basicConfig(
     level=logging.INFO,
@@ -38,21 +39,8 @@ def open_csv(file):
 
 def calculate_time(data):
     for i in range(1, len(data.get('time'))):
-        try:
-            post = datetime.datetime.strptime(data.get('time')[i], '%H:%M:%S.%f')
-            pre = datetime.datetime.strptime(data.get('time')[i-1], '%H:%M:%S.%f')
-        except ValueError:
-            pass
-        try:
-            post = datetime.datetime.strptime(data.get('time')[i], '%H:%M:%S')
-            pre = datetime.datetime.strptime(data.get('time')[i-1], '%H:%M:%S.%f')
-        except ValueError:
-            pass
-        try:
-            post = datetime.datetime.strptime(data.get('time')[i], '%H:%M:%S.%f')
-            pre = datetime.datetime.strptime(data.get('time')[i - 1], '%H:%M:%S')
-        except ValueError:
-            pass
+        post = read_timestamp(data.get('time')[i])
+        pre = read_timestamp(data.get('time')[i-1])
         data.get('micro_s').append(post - pre)
 
 
