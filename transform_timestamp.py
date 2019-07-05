@@ -102,9 +102,8 @@ def main():
             logger.info(f'[{cwd}][{local_file}]')
             data = {'time': [], 'mw': [], 'op': [], 'time_xs': [], 'time_00': [], 'ms': []}
             data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
-            xs_zone = False
-            xf_zone = False
             ts_xs = None
+            ts_xf = None
             f = open(local_file, 'r')
             reader = csv.DictReader(f)
             csv_list = list(reader)
@@ -127,13 +126,11 @@ def main():
 
                 if op == 'XS':
                     ts_xs = read_timestamp(time)
-                    xs_zone = True
-                    # MUST UPDATE REFERENCE TO DATA!
                     data['time_xs'] = backwards_xs_time_compute(data_time, ts_xs)
                     data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
                 if op == 'XF':
-                    xf_zone = True
-                if xs_zone and not xf_zone:
+                    ts_xf = read_timestamp(time)
+                if ts_xs and not ts_xf:
                     ms = (
                             read_timestamp(time) - data_time[-1]
                     ).microseconds
