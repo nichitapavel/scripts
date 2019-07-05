@@ -18,12 +18,16 @@ logging.basicConfig(
 )
 
 
+def memory():
+    return psutil.Process().memory_full_info().vms // 1024 // 1024
+
+
 def profile(mem, function, *args):
     start = datetime.datetime.now()
-    str_prf = f't0: {psutil.virtual_memory().percent}\t'
     function(*args)
+    str_prf = f't0: {memory()}M\t'
     t = datetime.datetime.now() - start
-    mem.append(f'{function.__name__ }\t' + str_prf + f't1: {psutil.virtual_memory().percent}\t time: {t}\n')
+    mem.append(f'{function.__name__ }\t' + str_prf + f't1: {memory()}M\t time: {t}')
 
 
 def backwards_xs_time_compute(data_time, ts_xs):
@@ -66,8 +70,6 @@ def write_csv(file, csv_data, mem):
             'time_00': data_time_00[i],
             'ms': data_ms[i]
         })
-    m = psutil.virtual_memory()
-    mem.append(f'After data to dict: {m.percent}, used: {m.used // 1024 // 1024}, free: {m.free // 1024 // 1024}')
 
 
 def main():
@@ -100,9 +102,7 @@ def main():
     )
 
     cwd = os.getcwd()
-    mem = []
-    m = psutil.virtual_memory()
-    mem.append(f'Default memory: {m.percent}, used: {m.used // 1024 // 1024}, free: {m.free // 1024 // 1024}')
+    mem.append(f'Default memory: {memory()}M')
     for local_file in os.listdir(os.curdir):
         # if not local_file.startswith('transformed') and local_file.endswith('.csv'):
         # if local_file == '01_small_file.csv':
@@ -153,6 +153,7 @@ def main():
             if ts_xs:
                 # write_csv(local_file, data, mem)
                 profile(mem, write_csv, local_file, data, mem)
+                profile(mem, write_csv, local_file, data)
             else:
                 logger.warning(f'[{cwd}][{local_file}][XS operation not found, skip this file]')
 
@@ -162,5 +163,7 @@ def main():
 
 if __name__ == "__main__":
     main()
-    m = psutil.virtual_memory()
-    print(f'final: {m.percent}, used: {m.used // 1024 // 1024}, free: {m.free // 1024 // 1024}')
+    mem = []
+    profile(mem, main)
+    for item in mem:
+        print(item)
