@@ -52,25 +52,22 @@ def csv_shortcuts(data):
 
 def write_csv(file, csv_data):
     data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(csv_data)
-    tr_f = open(
-        f'transformed-{file}',
-        'w'
-    )
-    header = csv_data.keys()
-    writer = csv.DictWriter(tr_f, header)
-    writer.writeheader()
-    for i in range(0, len(data_time)):
-        writer.writerow({
-            # data_time has datetime.datetime objects, I keep the initial format TS_LONG_FORMAT from common.py
-            # and slash the last 2 digits of microseconds
-            # 'time': data_time[i],
-            'time': data_time[i].strftime(TS_LONG_FORMAT)[:-2],
-            'mw': data_mw[i],
-            'op': data_op[i],
-            'time_xs': data_time_xs[i],
-            'time_00': data_time_00[i],
-            'ms': data_ms[i]
-        })
+    with open(f'transformed-{file}', 'w') as f:
+        header = csv_data.keys()
+        writer = csv.DictWriter(f, header)
+        writer.writeheader()
+        for i in range(0, len(data_time)):
+            writer.writerow({
+                # data_time has datetime.datetime objects, I keep the initial format TS_LONG_FORMAT from common.py
+                # and slash the last 2 digits of microseconds
+                # 'time': data_time[i],
+                'time': data_time[i].strftime(TS_LONG_FORMAT)[:-2],
+                'mw': data_mw[i],
+                'op': data_op[i],
+                'time_xs': data_time_xs[i],
+                'time_00': data_time_00[i],
+                'ms': data_ms[i]
+            })
 
 
 def main():
