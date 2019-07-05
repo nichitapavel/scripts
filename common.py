@@ -1,4 +1,5 @@
 import datetime
+from flyingcircus.base import readline
 
 # Devices used in testing
 HIKEY970 = 'hikey970'
@@ -48,3 +49,23 @@ def is_valid_last_row(rows):
             len(rows[-2][CSV_POWER]) != len(rows[-2][CSV_POWER]):
         return False
     return True
+
+
+def check_last_row(file):
+    rows = []  # Save the last 2 rows here
+
+    # Only iterate 2 times to get the last 2 rows
+    for row in readline(file, reverse=True):
+        if len(rows) < 2:
+            rows.append(row)
+        else:
+            break
+    if len(rows[0]) != len(rows[1]):  # Is the last row valid?
+        file.seek(file.tell() - len(rows[0]))
+        file.truncate()
+    file.seek(0)  # Set the current position in file at beginning
+
+
+def first_timestamp(file):
+    file.readline()
+    return read_timestamp(file.readline().split(',')[0])
