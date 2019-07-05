@@ -108,44 +108,13 @@ def main():
         # if local_file == '03_big_file.csv':
             logger.info(f'[{cwd}][{local_file}]')
             data = {'time': [], 'mw': [], 'op': [], 'time_xs': [], 'time_00': [], 'ms': []}
-            data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
             ts_xs = None
             ts_xf = None
-            with open(local_file, 'r+') as f:
-                ts_first = first_timestamp(f)
-                check_last_row(f)
-                reader = csv.DictReader(f)
-                m = psutil.virtual_memory()
-                mem.append(f'After list(reader): {m.percent}, used: {m.used // 1024 // 1024}, free: {m.free // 1024 // 1024}')
-
-                # list(reader)  # converts a csv reader to a list of it's values
-                for row in reader:
-                    time = row.get(CSV_TIME)
-                    power = row.get(CSV_POWER)
-                    op = row.get(CSV_OP)
-                    ms = ''
-                    ts_current = read_timestamp(time)
-
-                    if op == 'XS':
-                        ts_xs = ts_current
-                        data['time_xs'] = backwards_xs_time_compute(data_time, ts_xs)
-                        data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
-                    if op == 'XF':
-                        ts_xf = ts_current
-                    if ts_xs and not ts_xf:
-                        ms = (ts_current - data_time[-1]).microseconds
-                    if ts_xs:
-                        data_time_xs.append(
-                            (ts_current - ts_xs).total_seconds()
-                        )
-
-                    data_time.append(ts_current)
-                    data_mw.append(power)
-                    data_op.append(op)
-                    data_time_00.append(ts_current - ts_first)
-                    data_ms.append(ms)
-
-
+            with open(local_file, 'r+', newline='') as f:
+                ts_first = profile(mem, first_timestamp, f)
+                profile(mem, check_last_row, f)
+                reader = profile(mem, csv.DictReader, f)
+                ts_xs, ts_xf = profile(mem, csv_compute, data, reader, ts_first, ts_xf, ts_xs)
             if ts_xs:
                 # write_csv(local_file, data, mem)
                 profile(mem, write_csv, local_file, data)
@@ -154,6 +123,35 @@ def main():
 
     for item in mem:
         print(item)
+
+def csv_compute(data, reader, ts_first, ts_xf, ts_xs):
+    for row in reader:
+        data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
+        time = row.get(CSV_TIME)
+        power = row.get(CSV_POWER)
+        op = row.get(CSV_OP)
+        ms = ''
+        ts_current = read_timestamp(time)
+
+        if op == 'XS':
+            ts_xs = ts_current
+            data['time_xs'] = backwards_xs_time_compute(data_time, ts_xs)
+            data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
+        if op == 'XF':
+            ts_xf = ts_current
+        if ts_xs and not ts_xf:
+            ms = (ts_current - data_time[-1]).microseconds
+        if ts_xs:
+            data_time_xs.append(
+                (ts_current - ts_xs).total_seconds()
+            )
+
+        data_time.append(ts_current)
+        data_mw.append(power)
+        data_op.append(op)
+        data_time_00.append(ts_current - ts_first)
+        data_ms.append(ms)
+    return ts_xs, ts_xf
 
 
 if __name__ == "__main__":
