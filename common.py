@@ -6,6 +6,14 @@ ODROIDXU4_A = 'odroidxu4a'
 ODROIDXU4_B = 'odroidxu4b'
 ROCK960 = 'rock960'
 
+# Expected datetime formats
+TS_LONG_FORMAT = '%Y/%m/%d-%H:%M:%S.%f'
+TS_FORMAT = [
+    TS_LONG_FORMAT,
+    '%H:%M:%S.%f',
+    '%H:%M:%S',
+]
+
 # CSV header names
 CSV_TIME = 'Time'
 CSV_POWER = 'Power(mWatt)'
@@ -24,12 +32,7 @@ CSV_OP = 'Operation'
 
 
 def read_timestamp(timestamp):
-    ts_format = [
-        '%Y/%m/%d-%H:%M:%S.%f',
-        '%H:%M:%S.%f',
-        '%H:%M:%S',
-    ]
-    for item in ts_format:
+    for item in TS_FORMAT:
         try:
             ts = datetime.datetime.strptime(timestamp, item)
             return ts
