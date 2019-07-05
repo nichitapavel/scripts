@@ -121,8 +121,6 @@ def main():
             else:
                 logger.warning(f'[{cwd}][{local_file}][XS operation not found, skip this file]')
 
-    for item in mem:
-        print(item)
 
 def csv_compute(data, reader, ts_first, ts_xf, ts_xs):
     for row in reader:
