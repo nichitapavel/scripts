@@ -103,9 +103,10 @@ def main():
     m = psutil.virtual_memory()
     mem.append(f'Default memory: {m.percent}, used: {m.used // 1024 // 1024}, free: {m.free // 1024 // 1024}')
     for local_file in os.listdir(os.curdir):
-        if not local_file.startswith('transformed') and local_file.endswith('.csv'):
-        # if local_file == 'data-odroidxu4_a_mg4-B-087.csv':
-        # if local_file == 'test_file.csv':
+        # if not local_file.startswith('transformed') and local_file.endswith('.csv'):
+        # if local_file == '01_small_file.csv':
+        if local_file == '02_medium_file.csv':
+        # if local_file == '03_big_file.csv':
             logger.info(f'[{cwd}][{local_file}]')
             data = {'time': [], 'mw': [], 'op': [], 'time_xs': [], 'time_00': [], 'ms': []}
             data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
