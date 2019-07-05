@@ -129,27 +129,25 @@ def main():
                 power = csv_list[i][CSV_POWER]
                 op = csv_list[i][CSV_OP]
                 ms = ''
-                ts_op = read_timestamp(time)
+                ts_current = read_timestamp(time)
 
                 if op == 'XS':
-                    ts_xs = read_timestamp(time)
+                    ts_xs = ts_current
                     data['time_xs'] = backwards_xs_time_compute(data_time, ts_xs)
                     data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
                 if op == 'XF':
-                    ts_xf = read_timestamp(time)
+                    ts_xf = ts_current
                 if ts_xs and not ts_xf:
-                    ms = (
-                            read_timestamp(time) - data_time[-1]
-                    ).microseconds
+                    ms = (ts_current - data_time[-1]).microseconds
                 if ts_xs:
                     data_time_xs.append(
-                        (ts_op - ts_xs).total_seconds()
+                        (ts_current - ts_xs).total_seconds()
                     )
 
-                data_time.append(ts_op)
+                data_time.append(ts_current)
                 data_mw.append(power)
                 data_op.append(op)
-                data_time_00.append(ts_op - ts_first)
+                data_time_00.append(ts_current - ts_first)
                 data_ms.append(ms)
 
             m = psutil.virtual_memory()
