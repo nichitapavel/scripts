@@ -111,6 +111,7 @@ def main():
             ts_first = read_timestamp(
                 csv_list[0][CSV_TIME]
             )
+            f.close()
             if not is_valid_last_row(csv_list[-2:]):
                 del csv_list[-1]
             # reader.fieldnames
