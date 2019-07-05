@@ -90,6 +90,9 @@ def main():
     )
 
     cwd = os.getcwd()
+    mem = []
+    m = psutil.virtual_memory()
+    mem.append(f'Default memory: {m.percent}, used: {m.used // 1024 // 1024}, free: {m.free // 1024 // 1024}')
     for local_file in os.listdir(os.curdir):
         if not local_file.startswith('transformed') and local_file.endswith('.csv'):
         # if local_file == 'data-odroidxu4_a_mg4-B-087.csv':
@@ -108,6 +111,8 @@ def main():
             f = open(local_file, 'r')
             reader = csv.DictReader(f)
             csv_list = list(reader)
+            m = psutil.virtual_memory()
+            mem.append(f'After list(reader): {m.percent}, used: {m.used // 1024 // 1024}, free: {m.free // 1024 // 1024}')
             ts_first = read_timestamp(
                 csv_list[0][CSV_TIME]
             )
