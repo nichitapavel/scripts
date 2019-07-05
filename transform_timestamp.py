@@ -1,9 +1,13 @@
 import csv
+import datetime
 import logging
 import os
 import sys
 from optparse import OptionParser
-from common import read_timestamp, CSV_TIME, CSV_POWER, CSV_OP, is_valid_last_row
+
+import psutil
+
+from common import read_timestamp, CSV_TIME, CSV_POWER, CSV_OP, is_valid_last_row, TS_LONG_FORMAT
 
 logging.basicConfig(
     level=logging.INFO,
@@ -11,6 +15,49 @@ logging.basicConfig(
     format='[%(process)d][%(asctime)s.%(msecs)03d][%(name)s][%(levelname)s]%(message)s',
     datefmt='%Y/%m/%d-%H:%M:%S'
 )
+
+
+def backwards_xs_time_compute(data_time, ts_xs):
+    time_xs = []
+    for item in data_time:
+        time_xs.append(item-ts_xs)
+    return time_xs
+
+
+def csv_shortcuts(data):
+    data_time = data.get('time')
+    data_mw = data.get('mw')
+    data_op = data.get('op')
+    data_time_xs = data.get('time_xs')
+    data_time_00 = data.get('time_00')
+    data_ms = data.get('ms')
+    return data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms
+
+
+def write_csv(file, csv_data, mem):
+    data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(csv_data)
+    tr_f = open(
+        f'transformed-{file}',
+        'w'
+    )
+    header = csv_data.keys()
+    writer = csv.DictWriter(tr_f, header)
+    writer.writeheader()
+    start = datetime.datetime.now()
+    for i in range(0, len(data_time)):
+        writer.writerow({
+            # data_time has datetime.datetime objects, I keep the initial format TS_LONG_FORMAT from common.py
+            # and slash the last 2 digits of microseconds
+            'time': data_time[i].strftime(TS_LONG_FORMAT)[:-2],
+            'mw': data_mw[i],
+            'op': data_op[i],
+            'time_xs': data_time_xs[i],
+            'time_00': data_time_00[i],
+            'ms': data_ms[i]
+        })
+    m = psutil.virtual_memory()
+    mem.append(f'After data to dict: {m.percent}, used: {m.used // 1024 // 1024}, free: {m.free // 1024 // 1024}')
+    print(datetime.datetime.now() - start)
 
 
 def main():
@@ -78,6 +125,9 @@ def main():
                 if op == 'XS':
                     ts_xs = read_timestamp(time)
                     xs_zone = True
+                    # MUST UPDATE REFERENCE TO DATA!
+                    data['time_xs'] = backwards_xs_time_compute(data_time, ts_xs)
+                    data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
                 if op == 'XF':
                     xf_zone = True
                 if xs_zone and not xf_zone:
@@ -93,38 +143,19 @@ def main():
                 data_time_00.append(ts_op - ts_first)
                 data_ms.append(ms)
 
-            f.close()
+            m = psutil.virtual_memory()
+            mem.append(f'After first for: {m.percent}, used: {m.used // 1024 // 1024}, free: {m.free // 1024 // 1024}')
 
             if ts_xs:
-                tr_f = open(
-                    f'transformed-{local_file}',
-                    'w'
-                )
-                header = data.keys()
-                writer = csv.DictWriter(tr_f, header)
-                writer.writeheader()
-                data_list = []
-                for i in range(0, len(data_time)):
-                    row = {
-                        'time': data_time[i],
-                        'mw': data_mw[i],
-                        'op': data_op[i],
-                        'time_xs': data_time_xs[i],
-                        'time_00': data_time_00[i],
-                        'ms': data_ms[i]
-                    }
-                    data_list.append(row)
-                writer.writerows(data_list)
-                # writer.writerows(data.values())
-                # for item in data.values():
-                #     # row['time'] =
-                #     # [], 'mw': [], 'op': [], 'time_xs': [], 'time_00': [], 'ms': []
-                #     writer.writerow(row)
-                f.close()
-                tr_f.close()
+                write_csv(local_file, data, mem)
             else:
                 logger.warning(f'[{cwd}][{local_file}][XS operation not found, skip this file]')
+
+    for item in mem:
+        print(item)
 
 
 if __name__ == "__main__":
     main()
+    m = psutil.virtual_memory()
+    print(f'final: {m.percent}, used: {m.used // 1024 // 1024}, free: {m.free // 1024 // 1024}')
