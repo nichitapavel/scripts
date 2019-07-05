@@ -1,5 +1,6 @@
 import datetime
 
+# Devices used in testing
 HIKEY970 = 'hikey970'
 ODROIDXU4_A = 'odroidxu4a'
 ODROIDXU4_B = 'odroidxu4b'
