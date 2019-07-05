@@ -49,7 +49,7 @@ def csv_shortcuts(data):
     return data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms
 
 
-def write_csv(file, csv_data, mem):
+def write_csv(file, csv_data):
     data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(csv_data)
     tr_f = open(
         f'transformed-{file}',
@@ -147,12 +147,9 @@ def main():
                     data_time_00.append(ts_current - ts_first)
                     data_ms.append(ms)
 
-                m = psutil.virtual_memory()
-                mem.append(f'After first for: {m.percent}, used: {m.used // 1024 // 1024}, free: {m.free // 1024 // 1024}')
 
             if ts_xs:
                 # write_csv(local_file, data, mem)
-                profile(mem, write_csv, local_file, data, mem)
                 profile(mem, write_csv, local_file, data)
             else:
                 logger.warning(f'[{cwd}][{local_file}][XS operation not found, skip this file]')
@@ -162,7 +159,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
     mem = []
     profile(mem, main)
     for item in mem:
