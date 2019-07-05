@@ -24,10 +24,11 @@ def memory():
 
 def profile(mem, function, *args):
     start = datetime.datetime.now()
-    function(*args)
     str_prf = f't0: {memory()}M\t'
+    ret = function(*args)
     t = datetime.datetime.now() - start
     mem.append(f'{function.__name__ }\t' + str_prf + f't1: {memory()}M\t time: {t}')
+    return ret
 
 
 def backwards_xs_time_compute(data_time, ts_xs):
