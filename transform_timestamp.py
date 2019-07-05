@@ -50,6 +50,7 @@ def write_csv(file, csv_data, mem):
         writer.writerow({
             # data_time has datetime.datetime objects, I keep the initial format TS_LONG_FORMAT from common.py
             # and slash the last 2 digits of microseconds
+            # 'time': data_time[i],
             'time': data_time[i].strftime(TS_LONG_FORMAT)[:-2],
             'mw': data_mw[i],
             'op': data_op[i],
