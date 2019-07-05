@@ -17,6 +17,14 @@ logging.basicConfig(
 )
 
 
+def profile(mem, function, *args):
+    start = datetime.datetime.now()
+    str_prf = f't0: {psutil.virtual_memory().percent}\t'
+    function(*args)
+    t = datetime.datetime.now() - start
+    mem.append(f'{function.__name__ }\t' + str_prf + f't1: {psutil.virtual_memory().percent}\t time: {t}\n')
+
+
 def backwards_xs_time_compute(data_time, ts_xs):
     time_xs = []
     for item in data_time:
@@ -45,7 +53,6 @@ def write_csv(file, csv_data, mem):
     header = csv_data.keys()
     writer = csv.DictWriter(tr_f, header)
     writer.writeheader()
-    start = datetime.datetime.now()
     for i in range(0, len(data_time)):
         writer.writerow({
             # data_time has datetime.datetime objects, I keep the initial format TS_LONG_FORMAT from common.py
@@ -60,7 +67,6 @@ def write_csv(file, csv_data, mem):
         })
     m = psutil.virtual_memory()
     mem.append(f'After data to dict: {m.percent}, used: {m.used // 1024 // 1024}, free: {m.free // 1024 // 1024}')
-    print(datetime.datetime.now() - start)
 
 
 def main():
@@ -150,7 +156,8 @@ def main():
             mem.append(f'After first for: {m.percent}, used: {m.used // 1024 // 1024}, free: {m.free // 1024 // 1024}')
 
             if ts_xs:
-                write_csv(local_file, data, mem)
+                # write_csv(local_file, data, mem)
+                profile(mem, write_csv, local_file, data, mem)
             else:
                 logger.warning(f'[{cwd}][{local_file}][XS operation not found, skip this file]')
 
