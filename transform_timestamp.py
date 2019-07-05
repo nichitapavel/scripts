@@ -133,14 +133,14 @@ def main():
                     xf_zone = True
                 if xs_zone and not xf_zone:
                     ms = (
-                            read_timestamp(time) - read_timestamp(data_time[-1])
+                            read_timestamp(time) - data_time[-1]
                     ).microseconds
+                if ts_xs:
+                    data_time_xs.append(ts_op - ts_xs)
 
-                data_time.append(time)
+                data_time.append(ts_op)
                 data_mw.append(power)
                 data_op.append(op)
-                # data_time_xs.append((ts_op - ts_xs).total_seconds())  # ****
-                data_time_xs.append('')  # ****
                 data_time_00.append(ts_op - ts_first)
                 data_ms.append(ms)
 
