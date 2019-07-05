@@ -99,12 +99,7 @@ def main():
         # if local_file == 'test_file.csv':
             logger.info(f'[{cwd}][{local_file}]')
             data = {'time': [], 'mw': [], 'op': [], 'time_xs': [], 'time_00': [], 'ms': []}
-            data_time = data.get('time')
-            data_mw = data.get('mw')
-            data_op = data.get('op')
-            data_time_xs = data.get('time_xs')
-            data_time_00 = data.get('time_00')
-            data_ms = data.get('ms')
+            data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
             xs_zone = False
             xf_zone = False
             ts_xs = None
