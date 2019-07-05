@@ -20,7 +20,9 @@ logging.basicConfig(
 def backwards_xs_time_compute(data_time, ts_xs):
     time_xs = []
     for item in data_time:
-        time_xs.append(item-ts_xs)
+        time_xs.append(
+            (item-ts_xs).total_seconds()
+        )
     return time_xs
 
 
@@ -136,7 +138,9 @@ def main():
                             read_timestamp(time) - data_time[-1]
                     ).microseconds
                 if ts_xs:
-                    data_time_xs.append(ts_op - ts_xs)
+                    data_time_xs.append(
+                        (ts_op - ts_xs).total_seconds()
+                    )
 
                 data_time.append(ts_op)
                 data_mw.append(power)
