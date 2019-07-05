@@ -7,7 +7,8 @@ from optparse import OptionParser
 
 import psutil
 
-from common import read_timestamp, CSV_TIME, CSV_POWER, CSV_OP, is_valid_last_row, TS_LONG_FORMAT
+from common import read_timestamp, CSV_TIME, CSV_POWER, CSV_OP, TS_LONG_FORMAT, check_last_row, \
+    first_timestamp
 
 logging.basicConfig(
     level=logging.INFO,
@@ -112,47 +113,42 @@ def main():
             data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
             ts_xs = None
             ts_xf = None
-            f = open(local_file, 'r')
-            reader = csv.DictReader(f)
-            csv_list = list(reader)
-            m = psutil.virtual_memory()
-            mem.append(f'After list(reader): {m.percent}, used: {m.used // 1024 // 1024}, free: {m.free // 1024 // 1024}')
-            ts_first = read_timestamp(
-                csv_list[0][CSV_TIME]
-            )
-            f.close()
-            if not is_valid_last_row(csv_list[-2:]):
-                del csv_list[-1]
-            # reader.fieldnames
-            # list(reader)  # converts a csv reader to a list of it's values
-            for i in range(0, len(csv_list)):
-                time = csv_list[i][CSV_TIME]
-                power = csv_list[i][CSV_POWER]
-                op = csv_list[i][CSV_OP]
-                ms = ''
-                ts_current = read_timestamp(time)
+            with open(local_file, 'r+') as f:
+                ts_first = first_timestamp(f)
+                check_last_row(f)
+                reader = csv.DictReader(f)
+                m = psutil.virtual_memory()
+                mem.append(f'After list(reader): {m.percent}, used: {m.used // 1024 // 1024}, free: {m.free // 1024 // 1024}')
 
-                if op == 'XS':
-                    ts_xs = ts_current
-                    data['time_xs'] = backwards_xs_time_compute(data_time, ts_xs)
-                    data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
-                if op == 'XF':
-                    ts_xf = ts_current
-                if ts_xs and not ts_xf:
-                    ms = (ts_current - data_time[-1]).microseconds
-                if ts_xs:
-                    data_time_xs.append(
-                        (ts_current - ts_xs).total_seconds()
-                    )
+                # list(reader)  # converts a csv reader to a list of it's values
+                for row in reader:
+                    time = row.get(CSV_TIME)
+                    power = row.get(CSV_POWER)
+                    op = row.get(CSV_OP)
+                    ms = ''
+                    ts_current = read_timestamp(time)
 
-                data_time.append(ts_current)
-                data_mw.append(power)
-                data_op.append(op)
-                data_time_00.append(ts_current - ts_first)
-                data_ms.append(ms)
+                    if op == 'XS':
+                        ts_xs = ts_current
+                        data['time_xs'] = backwards_xs_time_compute(data_time, ts_xs)
+                        data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
+                    if op == 'XF':
+                        ts_xf = ts_current
+                    if ts_xs and not ts_xf:
+                        ms = (ts_current - data_time[-1]).microseconds
+                    if ts_xs:
+                        data_time_xs.append(
+                            (ts_current - ts_xs).total_seconds()
+                        )
 
-            m = psutil.virtual_memory()
-            mem.append(f'After first for: {m.percent}, used: {m.used // 1024 // 1024}, free: {m.free // 1024 // 1024}')
+                    data_time.append(ts_current)
+                    data_mw.append(power)
+                    data_op.append(op)
+                    data_time_00.append(ts_current - ts_first)
+                    data_ms.append(ms)
+
+                m = psutil.virtual_memory()
+                mem.append(f'After first for: {m.percent}, used: {m.used // 1024 // 1024}, free: {m.free // 1024 // 1024}')
 
             if ts_xs:
                 # write_csv(local_file, data, mem)
