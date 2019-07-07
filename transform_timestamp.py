@@ -24,10 +24,12 @@ def memory():
 
 def profile(mem, function, *args):
     start = datetime.datetime.now()
-    str_prf = f't0: {memory()}M\t'
+    mem_1 = memory()
+    str_prf = f'm1: {memory()}MB\t'
     ret = function(*args)
     t = datetime.datetime.now() - start
-    mem.append(f'{function.__name__ }\t' + str_prf + f't1: {memory()}M\t time: {t}')
+    mem_2 = memory()
+    mem.append(f'{function.__name__ }\t' + str_prf + f'm2: {mem_2}MB\t time: {t}\tmd: {mem_2 - mem_1}MB')
     return ret
 
 
