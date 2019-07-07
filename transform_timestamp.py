@@ -53,22 +53,22 @@ def csv_shortcuts(data):
 
 
 def write_csv(file, csv_data):
-    data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(csv_data)
+    # data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(csv_data)
     with open(f'transformed-{file}', 'w') as f:
         header = csv_data.keys()
         writer = csv.DictWriter(f, header)
         writer.writeheader()
-        for i in range(0, len(data_time)):
+        for i in range(0, len(csv_data['time'])):
             writer.writerow({
                 # data_time has datetime.datetime objects, I keep the initial format TS_LONG_FORMAT from common.py
                 # and slash the last 2 digits of microseconds
                 # 'time': data_time[i],
-                'time': data_time[i].strftime(TS_LONG_FORMAT)[:-2],
-                'mw': data_mw[i],
-                'op': data_op[i],
-                'time_xs': data_time_xs[i],
-                'time_00': data_time_00[i],
-                'ms': data_ms[i]
+                'time': csv_data['time'][i].strftime(TS_LONG_FORMAT)[:-2],
+                'mw': csv_data['mw'][i],
+                'op': csv_data['op'][i],
+                'time_xs': csv_data['time_xs'][i],
+                'time_00': csv_data['time_00'][i],
+                'ms': csv_data['ms'][i]
             })
 
 
@@ -126,7 +126,7 @@ def main():
 
 def csv_compute(data, reader, ts_first, ts_xf, ts_xs):
     for row in reader:
-        data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
+        # data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
         time = row.get(CSV_TIME)
         power = row.get(CSV_POWER)
         op = row.get(CSV_OP)
@@ -135,22 +135,22 @@ def csv_compute(data, reader, ts_first, ts_xf, ts_xs):
 
         if op == 'XS':
             ts_xs = ts_current
-            data['time_xs'] = backwards_xs_time_compute(data_time, ts_xs)
-            data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
+            data['time_xs'] = backwards_xs_time_compute(data['time'], ts_xs)
+            # data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
         if op == 'XF':
             ts_xf = ts_current
         if ts_xs and not ts_xf:
-            ms = (ts_current - data_time[-1]).microseconds
+            ms = (ts_current - data['time'][-1]).microseconds
         if ts_xs:
-            data_time_xs.append(
+            data['time_xs'].append(
                 (ts_current - ts_xs).total_seconds()
             )
 
-        data_time.append(ts_current)
-        data_mw.append(power)
-        data_op.append(op)
-        data_time_00.append(ts_current - ts_first)
-        data_ms.append(ms)
+        data['time'].append(ts_current)
+        data['mw'].append(power)
+        data['op'].append(op)
+        data['time_00'].append(ts_current - ts_first)
+        data['ms'].append(ms)
     return ts_xs, ts_xf
 
 
