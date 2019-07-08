@@ -112,7 +112,7 @@ def main():
             data = {'time': [], 'mw': [], 'op': [], 'time_xs': [], 'time_00': [], 'ms': []}
             ts_xs = None
             ts_xf = None
-            with open(local_file, 'r+', newline='') as f:
+            with open(local_file, 'r+') as f:
                 ts_first = profile(mem, first_timestamp, f)
                 profile(mem, check_last_row, f)
                 reader = profile(mem, csv.DictReader, f)
