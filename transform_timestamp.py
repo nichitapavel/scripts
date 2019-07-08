@@ -165,7 +165,8 @@ def csv_compute(data, file, ts_first, ts_xf, ts_xs):
 
 
 def calculate_energy(power, power_prev, ms):
-    """ Calculate energy in joules for the zone defined by Xn, X(n-1) and { [Tn - T(n-1)] => ms }
+    """
+    Calculate energy in joules for the zone defined by Xn, X(n-1) and { [Tn - T(n-1)] => ms }
     :param power: Xn (current power)
     :param power_prev: X(n-1) (previous power)
     :param ms: Tn-T(n-1)
