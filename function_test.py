@@ -1,7 +1,7 @@
 import pytest
 import datetime
 
-from common import read_timestamp
+from common import read_timestamp, csv_name_parsing
 
 
 @pytest.mark.parametrize(
@@ -27,3 +27,36 @@ from common import read_timestamp
 )
 def test_read_timestamp(timestamp, ex_timestamp):
     assert read_timestamp(timestamp) == ex_timestamp
+
+
+@pytest.mark.parametrize(
+    "name, expected",
+    [
+        (
+                'data-debug_hikey970_android_is_b_1_050.csv',
+                {'device': 'hikey970', 'os': 'android', 'benchmark': 'is', 'class': 'b', 'threads': '1'}
+        ),
+        (
+                'data-debug_odroidxu4a_android_bt_w_2_050.csv',
+                {'device': 'odroidxu4a', 'os': 'android', 'benchmark': 'bt', 'class': 'w', 'threads': '2'}
+        ),
+        (
+                'data-debug_rock960_android_mg_b_4_050.csv',
+                {'device': 'rock960', 'os': 'android', 'benchmark': 'mg', 'class': 'b', 'threads': '4'}
+        ),
+        (
+                'data-release_hikey970_linux_is_b_1_050.csv',
+                {'device': 'hikey970', 'os': 'linux', 'benchmark': 'is', 'class': 'b', 'threads': '1'}
+        ),
+        (
+                'data-release_odroidxu4a_linux_bt_w_2_050.csv',
+                {'device': 'odroidxu4a', 'os': 'linux', 'benchmark': 'bt', 'class': 'w', 'threads': '2'}
+        ),
+        (
+                'data-release_rock960_linux_mg_b_4_050.csv',
+                {'device': 'rock960', 'os': 'linux', 'benchmark': 'mg', 'class': 'b', 'threads': '4'}
+        )
+    ]
+)
+def test_csv_name_parsing(name, expected):
+    assert csv_name_parsing(name) == expected

@@ -31,6 +31,17 @@ CSV_OP = 'Operation'
 # <iteration> is used for energy data files (csv's) and denotes the number of iteration that was running
 # <suffix> is the format of the file, usually '.log' and '.csv'
 
+def csv_name_parsing(filename):
+    parts = filename.split('_')
+    csv_row = {
+        'device': parts[-6],
+        'os': parts[-5],
+        'benchmark': parts[-4],
+        'class': parts[-3],
+        'threads': parts[-2],
+    }
+    return csv_row
+
 
 def read_timestamp(timestamp):
     for item in TS_FORMAT:
