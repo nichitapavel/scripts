@@ -56,6 +56,10 @@ def test_read_timestamp(timestamp, ex_timestamp):
                 'data-release_rock960_linux_mg_b_4_050.csv',
                 {'device': 'rock960', 'os': 'linux', 'benchmark': 'mg', 'class': 'b', 'threads': '4'}
         )
+        # (
+        #         'data_odroidxu4a_is_b_2_001',
+        #        'TO IMPLEMENTE, SHOULD FAIL, HOW IT SHOULD FAIL?'
+        # )
     ]
 )
 def test_csv_name_parsing(name, expected):
