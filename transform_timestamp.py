@@ -72,6 +72,14 @@ def write_csv(file, csv_data):
             })
 
 
+def write_csv_list_of_dict(file, csv_data):
+    with open(file, 'w') as f:
+        header = csv_data[0].keys()
+        writer = csv.DictWriter(f, header)
+        writer.writeheader()
+        writer.writerows(csv_data)
+
+
 def main(energy_data):
     logger = logging.getLogger('TRANSFORM_CSV')
 
@@ -113,10 +121,14 @@ def main(energy_data):
             ts_xs = None
             ts_xf = None
             with open(local_file, 'r+') as f:
+                energy_dict = csv_name_parsing(local_file)
                 ts_first = profile(mem, first_timestamp, f)
                 profile(mem, check_last_row, f)
                 ts_xs, ts_xf, energy, time_ms = profile(mem, csv_compute, data, f, ts_first, ts_xf, ts_xs)
                 energy_data.append({'joules': energy, 'time': time_ms})
+                ts_xs, ts_xf, energy_dict['joules'], energy_dict['time'] = \
+                    profile(mem, csv_compute, data, f, ts_first, ts_xf, ts_xs)
+                energy_data.append(energy_dict)
             if ts_xs and ts_xf:
                 # write_csv(local_file, data, mem)
                 profile(mem, write_csv, local_file, data)
@@ -201,6 +213,8 @@ if __name__ == "__main__":
     mem = []
     energy_data = []
     profile(mem, main, energy_data)
+    profile(mem, write_csv_list_of_dict, 'energy.csv', energy_data)
+
     for item in mem:
         print(item)
     for item in energy_data:
