@@ -122,8 +122,6 @@ def main(energy_data):
                 energy_dict = csv_name_parsing(local_file)
                 ts_first = profile(mem, first_timestamp, f)
                 profile(mem, check_last_row, f)
-                ts_xs, ts_xf, energy, time_ms = profile(mem, csv_compute, data, f, ts_first, ts_xf, ts_xs)
-                energy_data.append({'joules': energy, 'time': time_ms})
                 ts_xs, ts_xf, energy_dict['joules'], energy_dict['time'] = \
                     profile(mem, csv_compute, data, f, ts_first, ts_xf, ts_xs)
                 energy_data.append(energy_dict)
