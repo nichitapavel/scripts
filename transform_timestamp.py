@@ -7,8 +7,7 @@ from optparse import OptionParser
 
 import psutil
 
-from common import read_timestamp, CSV_TIME, CSV_POWER, CSV_OP, TS_LONG_FORMAT, check_last_row, \
-    first_timestamp
+from common import read_timestamp, CSV_TIME, CSV_POWER, CSV_OP, check_last_row, \
     first_timestamp, csv_name_parsing
 
 logging.basicConfig(
@@ -63,12 +62,7 @@ def write_csv_dict_with_lists(filename, csv_data):
         for i in range(0, len(csv_data[header[0]])):
             data_dict = {}
             for item in header:
-                # data_time has datetime.datetime objects, I keep the initial format TS_LONG_FORMAT from common.py
-                # and slash the last 2 digits of microseconds
-                if isinstance(csv_data[item][i], datetime.datetime):
-                    data_dict[item] = csv_data[item][i].strftime(TS_LONG_FORMAT)[:-2]
-                else:
-                    data_dict[item] = csv_data[item][i]
+                data_dict[item] = csv_data[item][i]
             writer.writerow(data_dict)
 
 
@@ -117,7 +111,7 @@ def main(energy_data):
         # if local_file == '03_big_file.csv':
             logger.info(f'[{cwd}][{local_file}]')
             mem.append(f'***************************** {local_file} *****************************')
-            data = {'time': [], 'mw': [], 'op': [], 'time_xs': [], 'time_00': [], 'ms': []}
+            data = {'time_str': [], 'time': [], 'mw': [], 'op': [], 'time_xs': [], 'time_00': [], 'ms': []}
             ts_xs = None
             ts_xf = None
             with open(local_file, 'r+') as f:
@@ -129,6 +123,7 @@ def main(energy_data):
                 energy_data.append(energy_dict)
             if ts_xs and ts_xf:
                 # write_csv(local_file, data, mem)
+                del data['time']
                 profile(mem, write_csv_dict_with_lists, f'transformed-{local_file}', data)
             else:
                 logger.warning(f'[{cwd}][{local_file}][XS operation not found, skip this file]')
@@ -140,11 +135,11 @@ def csv_compute(data, file, ts_first, ts_xf, ts_xs):
     time_ms = 0
     for row in reader:
         # data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
-        time = row.get(CSV_TIME)
+        time_str = row.get(CSV_TIME)
         power_current = row.get(CSV_POWER)
         op = row.get(CSV_OP)
         ms = ''
-        ts_current = read_timestamp(time)
+        ts_current = read_timestamp(time_str)
 
         if ts_xs and not ts_xf:
             # When inside this condition we are at Tn and Xn with n = 1 to XF mark
@@ -166,6 +161,7 @@ def csv_compute(data, file, ts_first, ts_xf, ts_xs):
                 (ts_current - ts_xs).total_seconds()
             )
 
+        data['time_str'].append(time_str)
         data['time'].append(ts_current)
         data['mw'].append(power_current)
         data['op'].append(op)
