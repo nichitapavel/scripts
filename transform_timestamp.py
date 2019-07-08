@@ -213,4 +213,3 @@ if __name__ == "__main__":
 
     for item in mem:
         print(item)
-        print(f'Joules: {item["joules"]}\t Time: {item["time"]}')
