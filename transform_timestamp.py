@@ -9,6 +9,7 @@ import psutil
 
 from common import read_timestamp, CSV_TIME, CSV_POWER, CSV_OP, TS_LONG_FORMAT, check_last_row, \
     first_timestamp
+    first_timestamp, csv_name_parsing
 
 logging.basicConfig(
     level=logging.INFO,
@@ -115,6 +116,7 @@ def main(energy_data):
         if local_file == '02_medium_file.csv':
         # if local_file == '03_big_file.csv':
             logger.info(f'[{cwd}][{local_file}]')
+            mem.append(f'***************************** {local_file} *****************************')
             data = {'time': [], 'mw': [], 'op': [], 'time_xs': [], 'time_00': [], 'ms': []}
             ts_xs = None
             ts_xf = None
