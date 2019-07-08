@@ -52,24 +52,23 @@ def csv_shortcuts(data):
     return data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms
 
 
-def write_csv(file, csv_data):
+def write_csv_dict_with_lists(filename, csv_data):
     # data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(csv_data)
-    with open(f'transformed-{file}', 'w') as f:
-        header = csv_data.keys()
+    with open(filename, 'w') as f:
+        header = list(csv_data.keys())
         writer = csv.DictWriter(f, header)
         writer.writeheader()
-        for i in range(0, len(csv_data['time'])):
-            writer.writerow({
+        # upper range defined by any list from the csv_data, since they all are equal
+        for i in range(0, len(csv_data[header[0]])):
+            data_dict = {}
+            for item in header:
                 # data_time has datetime.datetime objects, I keep the initial format TS_LONG_FORMAT from common.py
                 # and slash the last 2 digits of microseconds
-                # 'time': data_time[i],
-                'time': csv_data['time'][i].strftime(TS_LONG_FORMAT)[:-2],
-                'mw': csv_data['mw'][i],
-                'op': csv_data['op'][i],
-                'time_xs': csv_data['time_xs'][i],
-                'time_00': csv_data['time_00'][i],
-                'ms': csv_data['ms'][i]
-            })
+                if isinstance(csv_data[item][i], datetime.datetime):
+                    data_dict[item] = csv_data[item][i].strftime(TS_LONG_FORMAT)[:-2]
+                else:
+                    data_dict[item] = csv_data[item][i]
+            writer.writerow(data_dict)
 
 
 def write_csv_list_of_dict(file, csv_data):
@@ -112,7 +111,6 @@ def main(energy_data):
     cwd = os.getcwd()
     mem.append(f'Default memory: {memory()}M')
     for local_file in os.listdir(os.curdir):
-        # if not local_file.startswith('transformed') and local_file.endswith('.csv'):
         # if local_file == '01_small_file.csv':
         if local_file == '02_medium_file.csv':
         # if local_file == '03_big_file.csv':
@@ -131,7 +129,7 @@ def main(energy_data):
                 energy_data.append(energy_dict)
             if ts_xs and ts_xf:
                 # write_csv(local_file, data, mem)
-                profile(mem, write_csv, local_file, data)
+                profile(mem, write_csv_dict_with_lists, f'transformed-{local_file}', data)
             else:
                 logger.warning(f'[{cwd}][{local_file}][XS operation not found, skip this file]')
 
@@ -217,5 +215,4 @@ if __name__ == "__main__":
 
     for item in mem:
         print(item)
-    for item in energy_data:
         print(f'Joules: {item["joules"]}\t Time: {item["time"]}')
