@@ -72,7 +72,7 @@ def write_csv(file, csv_data):
             })
 
 
-def main():
+def main(energy_data):
     logger = logging.getLogger('TRANSFORM_CSV')
 
     # Parsear linea de comandos
@@ -115,47 +115,70 @@ def main():
             with open(local_file, 'r+') as f:
                 ts_first = profile(mem, first_timestamp, f)
                 profile(mem, check_last_row, f)
-                reader = profile(mem, csv.DictReader, f)
-                ts_xs, ts_xf = profile(mem, csv_compute, data, reader, ts_first, ts_xf, ts_xs)
-            if ts_xs:
+                ts_xs, ts_xf, energy, time_ms = profile(mem, csv_compute, data, f, ts_first, ts_xf, ts_xs)
+                energy_data.append({'joules': energy, 'time': time_ms})
+            if ts_xs and ts_xf:
                 # write_csv(local_file, data, mem)
                 profile(mem, write_csv, local_file, data)
             else:
                 logger.warning(f'[{cwd}][{local_file}][XS operation not found, skip this file]')
 
 
-def csv_compute(data, reader, ts_first, ts_xf, ts_xs):
+def csv_compute(data, file, ts_first, ts_xf, ts_xs):
+    reader = csv.DictReader(file)
+    energy = 0
+    time_ms = 0
     for row in reader:
         # data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
         time = row.get(CSV_TIME)
-        power = row.get(CSV_POWER)
+        power_current = row.get(CSV_POWER)
         op = row.get(CSV_OP)
         ms = ''
         ts_current = read_timestamp(time)
 
+        if ts_xs and not ts_xf:
+            # When inside this condition we are at Tn and Xn with n = 1 to XF mark
+            # XS is n = 0, Xn defines power in milliwatt, Tn defines time
+            # energy of this zone is equal to (Xn + X(n-1))/2 * (Tn-T(n-1))
+            # X(n-1) is "data['mw'][-1]", Xn is "power_current"
+            # T(n-1) is "data['time'][-1]", Tn is "ts_current"
+            ms = (ts_current - data['time'][-1]).microseconds
+            energy += calculate_energy(power_current, data['mw'][-1], ms)
+            time_ms += ms
         if op == 'XS':
             ts_xs = ts_current
             data['time_xs'] = backwards_xs_time_compute(data['time'], ts_xs)
             # data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
         if op == 'XF':
             ts_xf = ts_current
-        if ts_xs and not ts_xf:
-            ms = (ts_current - data['time'][-1]).microseconds
         if ts_xs:
             data['time_xs'].append(
                 (ts_current - ts_xs).total_seconds()
             )
 
         data['time'].append(ts_current)
-        data['mw'].append(power)
+        data['mw'].append(power_current)
         data['op'].append(op)
         data['time_00'].append(ts_current - ts_first)
         data['ms'].append(ms)
-    return ts_xs, ts_xf
+    return ts_xs, ts_xf, energy / 1000000000, time_ms / 1000000
+
+
+def calculate_energy(power, power_prev, ms):
+    """ Calculate energy in joules for the zone defined by Xn, X(n-1) and { [Tn - T(n-1)] => ms }
+    :param power: Xn (current power)
+    :param power_prev: X(n-1) (previous power)
+    :param ms: Tn-T(n-1)
+    :return: float, computed energy in joules
+    """
+    return (float(power) + float(power_prev)) / 2 * ms
 
 
 if __name__ == "__main__":
     mem = []
-    profile(mem, main)
+    energy_data = []
+    profile(mem, main, energy_data)
     for item in mem:
         print(item)
+    for item in energy_data:
+        print(f'Joules: {item["joules"]}\t Time: {item["time"]}')
