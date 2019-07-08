@@ -175,6 +175,28 @@ def calculate_energy(power, power_prev, ms):
     return (float(power) + float(power_prev)) / 2 * ms
 
 
+def pre_compute_checks(file):
+    """
+    Checks in file:
+    1. return the first timestamp that appears in file
+    2. checks if last row is valid (complete data), if no deletes it
+    3. searches and returns timestamp of XS and XF marks
+    :param file: csv file with raw data
+    :return: xs, xf and first timestamps
+    """
+    ts_first = first_timestamp(file)
+    check_last_row(file)
+    reader = csv.DictReader(file)
+    for row in reader:
+        op = row.get(CSV_OP)
+        if op == 'XS':
+            ts_xs = read_timestamp(row.get(CSV_TIME))
+        if op == 'XF':
+            ts_xf = read_timestamp(row.get(CSV_TIME))
+
+    return ts_xs, ts_xf, ts_first
+
+
 if __name__ == "__main__":
     mem = []
     energy_data = []
