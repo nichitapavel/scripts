@@ -68,4 +68,6 @@ def check_last_row(file):
 
 def first_timestamp(file):
     file.readline()
-    return read_timestamp(file.readline().split(',')[0])
+    ts_first = read_timestamp(file.readline().split(',')[0])
+    file.seek(0)  # Set the current position in file at beginning
+    return ts_first
