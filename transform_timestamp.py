@@ -122,28 +122,29 @@ def main(energy_csv):
     cwd = os.getcwd()
     files = get_files()
     mem.append(f'Default memory: {memory()}M')
-    for local_file in os.listdir(os.curdir):
-        # if local_file == '01_small_file.csv':
-        if local_file == '02_medium_file.csv':
-        # if local_file == '03_big_file.csv':
-            logger.info(f'[{cwd}][{local_file}]')
-            mem.append(f'***************************** {local_file} *****************************')
-            data = {'time_str': [], 'time': [], 'mw': [], 'op': [], 'time_xs': [], 'time_00': [], 'ms': []}
-            ts_xs = None
-            ts_xf = None
-            with open(local_file, 'r+') as f:
-                energy_dict = csv_name_parsing(local_file)
-                ts_first = profile(mem, first_timestamp, f)
-                profile(mem, check_last_row, f)
-                ts_xs, ts_xf, energy_dict['joules'], energy_dict['time'] = \
-                    profile(mem, csv_compute, data, f, ts_first, ts_xf, ts_xs)
-                energy_data.append(energy_dict)
-            if ts_xs and ts_xf:
-                # write_csv(local_file, data, mem)
-                del data['time']
-                profile(mem, write_csv_dict_with_lists, f'transformed-{local_file}', data)
-            else:
-                logger.warning(f'[{cwd}][{local_file}][XS operation not found, skip this file]')
+    for file in files:
+        file_compute(cwd, energy_csv, file)
+
+
+def file_compute(cwd, energy_csv, file):
+    logger.info(f'[{cwd}][{file}]')
+    mem.append(f'***************************** {file} *****************************')
+    data = {'time_str': [], 'time': [], 'mw': [], 'op': [], 'time_xs': [], 'time_00': [], 'ms': []}
+    ts_xs = None
+    ts_xf = None
+    with open(file, 'r+') as f:
+        energy_dict = csv_name_parsing(file)
+        ts_first = profile(mem, first_timestamp, f)
+        profile(mem, check_last_row, f)
+        ts_xs, ts_xf, energy_dict['joules'], energy_dict['time'] = \
+            profile(mem, csv_compute, data, f, ts_first, ts_xf, ts_xs)
+    if ts_xs and ts_xf:
+        # write_csv(file, data, mem)
+        del data['time']
+        energy_csv.append(energy_dict)
+        profile(mem, write_csv_dict_with_lists, f'transformed-{file}', data)
+    else:
+        logger.warning(f'[{cwd}][{file}][XS operation not found, skip this file]')
 
 
 def csv_compute(data, file, ts_first, ts_xf, ts_xs):
