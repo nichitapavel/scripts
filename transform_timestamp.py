@@ -67,11 +67,14 @@ def write_csv_dict_with_lists(filename, csv_data):
 
 
 def write_csv_list_of_dict(filename, csv_data):
-    with open(filename, 'w') as f:
-        header = csv_data[0].keys()
-        writer = csv.DictWriter(f, header)
-        writer.writeheader()
-        writer.writerows(csv_data)
+    try:
+        with open(filename, 'w') as f:
+            header = csv_data[0].keys()
+            writer = csv.DictWriter(f, header)
+            writer.writeheader()
+            writer.writerows(csv_data)
+    except IndexError:
+        logger.warning(f'[NO DATA IN ENERGY CSV]')
 
 
 def main(energy_data):
