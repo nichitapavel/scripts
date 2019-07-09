@@ -61,8 +61,8 @@ def write_csv_dict_with_lists(filename, csv_data):
         # upper range defined by any list from the csv_data, since they all are equal
         for i in range(0, len(csv_data[header[0]])):
             data_dict = {}
-            for item in header:
-                data_dict[item] = csv_data[item][i]
+            for key in header:
+                data_dict[key] = csv_data[key][i]
             writer.writerow(data_dict)
 
 
