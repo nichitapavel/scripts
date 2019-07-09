@@ -18,6 +18,18 @@ logging.basicConfig(
 )
 
 
+def log_to_file():
+    file_log = logging.FileHandler('transform_csv.log', mode='w')
+    file_log.setLevel(logging.INFO)
+    file_log.setFormatter(
+        logging.Formatter(
+            '[%(process)d][%(asctime)s.%(msecs)03d][%(name)s][%(levelname)s]%(message)s',
+            datefmt='%Y/%m/%d-%H:%M:%S'
+        )
+    )
+    return file_log
+
+
 def memory():
     return psutil.Process().memory_full_info().vms // 1024 // 1024
 
@@ -105,19 +117,7 @@ def main(energy_csv):
 
     options = parse_args()
     os.chdir(options.directory)
-
-    file_log = logging.FileHandler('transform_csv.log', mode='w')
-    file_log.setLevel(logging.INFO)
-    file_log.setFormatter(
-        logging.Formatter(
-            '[%(process)d][%(asctime)s.%(msecs)03d][%(name)s][%(levelname)s]%(message)s',
-            datefmt='%Y/%m/%d-%H:%M:%S'
-        )
-    )
-
-    logger.addHandler(
-        file_log
-    )
+    logger.addHandler(log_to_file())
 
     cwd = os.getcwd()
     files = get_files()
