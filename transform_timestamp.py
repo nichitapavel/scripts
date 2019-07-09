@@ -77,20 +77,23 @@ def write_csv_list_of_dict(filename, csv_data):
         logger.warning(f'[NO DATA IN ENERGY CSV]')
 
 
-def main(energy_data):
-    logger = logging.getLogger('TRANSFORM_CSV')
-
+def parse_args():
     # Parsear linea de comandos
     parser = OptionParser("usage: %prog -d|--directory DIRECTORY")
     parser.add_option("-d", "--directory", action="store", type="string", dest="directory")
-
     (options, args) = parser.parse_args()
-
     if not options.directory:
         logger.error('[You must specify a working directory]')
         parser.print_help()
         sys.exit(-1)
+    return options
 
+
+def main(energy_csv):
+    global logger
+    logger = logging.getLogger('TRANSFORM_CSV')
+
+    options = parse_args()
     os.chdir(options.directory)
 
     file_log = logging.FileHandler('transform_csv.log', mode='w')
