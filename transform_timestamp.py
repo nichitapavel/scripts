@@ -22,22 +22,22 @@ def memory():
     return psutil.Process().memory_full_info().vms // 1024 // 1024
 
 
-def profile(mem, function, *args):
+def profile(m, function, *args):
     start = datetime.datetime.now()
     mem_1 = memory()
-    str_prf = f'm1: {memory()}MB\t'
+    str_prf = f'm1: {memory()}MB'
     ret = function(*args)
     t = datetime.datetime.now() - start
     mem_2 = memory()
-    mem.append(f'{function.__name__ }\t' + str_prf + f'm2: {mem_2}MB\t time: {t}\tmd: {mem_2 - mem_1}MB')
+    m.append(f'{function.__name__}\t{str_prf}\tm2: {mem_2}MB\t time: {t}\tmd: {mem_2 - mem_1}MB')
     return ret
 
 
 def backwards_xs_time_compute(data_time, ts_xs):
     time_xs = []
-    for item in data_time:
+    for ts in data_time:
         time_xs.append(
-            (item-ts_xs).total_seconds()
+            (ts - ts_xs).total_seconds()
         )
     return time_xs
 
@@ -140,7 +140,7 @@ def csv_compute(data, file, ts_first, ts_xf, ts_xs):
         op = row.get(CSV_OP)
         ms = ''
         ts_current = read_timestamp(time_str)
-
+        # Order of these conditions is important
         if ts_xs and not ts_xf:
             # When inside this condition we are at Tn and Xn with n = 1 to XF mark
             # XS is n = 0, Xn defines power in milliwatt, Tn defines time
@@ -192,6 +192,7 @@ def pre_compute_checks(file):
     """
     ts_first = first_timestamp(file)
     check_last_row(file)
+    ts_xs, ts_xf = None, None
     reader = csv.DictReader(file)
     for row in reader:
         op = row.get(CSV_OP)
