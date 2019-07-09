@@ -89,6 +89,16 @@ def parse_args():
     return options
 
 
+def get_files():
+    files = os.listdir(os.curdir)
+    files_return = []
+    for filename in files:
+        if filename.startswith('data') and filename.endswith('.csv'):
+            if f'transformed-{filename}' not in files:
+                files_return.append(filename)
+    return files_return
+
+
 def main(energy_csv):
     global logger
     logger = logging.getLogger('TRANSFORM_CSV')
@@ -110,6 +120,7 @@ def main(energy_csv):
     )
 
     cwd = os.getcwd()
+    files = get_files()
     mem.append(f'Default memory: {memory()}M')
     for local_file in os.listdir(os.curdir):
         # if local_file == '01_small_file.csv':
