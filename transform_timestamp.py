@@ -122,7 +122,9 @@ def main(energy_csv):
 
     cwd = os.getcwd()
     files = get_files()
+    # TODO mem profiling not working with mp
     mem.append(f'Default memory: {memory()}M')
+    # TODO a more dynamic way to assign cores
     with Pool(4) as p:
         results = [p.apply_async(file_compute, (cwd, file)) for file in files]
         for result in results:
