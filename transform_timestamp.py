@@ -3,6 +3,7 @@ import datetime
 import logging
 import os
 import sys
+from multiprocessing.pool import Pool
 from optparse import OptionParser
 
 import psutil
@@ -122,8 +123,10 @@ def main(energy_csv):
     cwd = os.getcwd()
     files = get_files()
     mem.append(f'Default memory: {memory()}M')
-    for file in files:
-        file_compute(cwd, energy_csv, file)
+    with Pool(4) as p:
+        results = [p.apply_async(file_compute, (cwd, energy_csv, file)) for file in files]
+        for result in results:
+            result.wait()
 
 
 def file_compute(cwd, energy_csv, file):
