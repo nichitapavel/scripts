@@ -87,7 +87,7 @@ def write_csv_list_of_dict(filename, csv_data):
             writer.writeheader()
             writer.writerows(csv_data)
     except IndexError:
-        logger.warning(f'[NO DATA IN ENERGY CSV]')
+        logger.warning('[NO DATA IN ENERGY CSV]')
 
 
 def parse_args():
