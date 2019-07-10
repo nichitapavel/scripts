@@ -33,33 +33,37 @@ def test_read_timestamp(timestamp, ex_timestamp):
     "name, expected",
     [
         (
-                'data-debug_hikey970_android_is_b_1_050.csv',
-                {'device': 'hikey970', 'os': 'android', 'benchmark': 'is', 'class': 'b', 'threads': '1'}
+            'data-debug_hikey970_android_is_b_1_050.csv',
+            {'device': 'hikey970', 'os': 'android', 'benchmark': 'is', 'size': 'b', 'threads': '1', 'iteration': '050'}
         ),
         (
-                'data-debug_odroidxu4a_android_bt_w_2_050.csv',
-                {'device': 'odroidxu4a', 'os': 'android', 'benchmark': 'bt', 'class': 'w', 'threads': '2'}
+            'data-debug_odroidxu4a_android_bt_w_2_050.csv',
+            {'device': 'odroidxu4a', 'os': 'android', 'benchmark': 'bt', 'size': 'w', 'threads': '2', 'iteration': '050'}
         ),
         (
-                'data-debug_rock960_android_mg_b_4_050.csv',
-                {'device': 'rock960', 'os': 'android', 'benchmark': 'mg', 'class': 'b', 'threads': '4'}
+            'data_rock960_android_mg_b_4_050.csv',
+            {'device': 'rock960', 'os': 'android', 'benchmark': 'mg', 'size': 'b', 'threads': '4', 'iteration': '050'}
         ),
         (
-                'data-release_hikey970_linux_is_b_1_050.csv',
-                {'device': 'hikey970', 'os': 'linux', 'benchmark': 'is', 'class': 'b', 'threads': '1'}
+            'data-release_hikey970_linux_is_b_1_050.csv',
+            {'device': 'hikey970', 'os': 'linux', 'benchmark': 'is', 'size': 'b', 'threads': '1', 'iteration': '050'}
         ),
         (
-                'data-release_odroidxu4a_linux_bt_w_2_050.csv',
-                {'device': 'odroidxu4a', 'os': 'linux', 'benchmark': 'bt', 'class': 'w', 'threads': '2'}
+            'data_odroidxu4a_linux_bt_w_2_050.csv',
+            {'device': 'odroidxu4a', 'os': 'linux', 'benchmark': 'bt', 'size': 'w', 'threads': '2', 'iteration': '050'}
         ),
         (
-                'data-release_rock960_linux_mg_b_4_050.csv',
-                {'device': 'rock960', 'os': 'linux', 'benchmark': 'mg', 'class': 'b', 'threads': '4'}
-        )
+            'data-release_rock960_linux_mg_b_4_050.csv',
+            {'device': 'rock960', 'os': 'linux', 'benchmark': 'mg', 'size': 'b', 'threads': '4', 'iteration': '050'}
+        ),
         # (
         #         'data_odroidxu4a_is_b_2_001',
         #        'TO IMPLEMENTE, SHOULD FAIL, HOW IT SHOULD FAIL?'
         # )
+        (
+            'metrics_metrics_hikey970_android_bt_s_1.log',
+            {'device': 'hikey970', 'os': 'android', 'benchmark': 'bt', 'size': 's', 'threads': '1'}
+        )
     ]
 )
 def test_csv_name_parsing(name, expected):

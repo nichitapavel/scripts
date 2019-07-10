@@ -1,4 +1,6 @@
 import datetime
+from typing import Dict, Any
+
 from flyingcircus.base import readline
 
 # Devices used in testing
@@ -32,14 +34,27 @@ CSV_OP = 'Operation'
 # <suffix> is the format of the file, usually '.log' and '.csv'
 
 def csv_name_parsing(filename):
-    parts = filename.split('_')
-    csv_row = {
-        'device': parts[-6],
-        'os': parts[-5],
-        'benchmark': parts[-4],
-        'class': parts[-3],
-        'threads': parts[-2],
-    }
+    csv_row = {}
+    parts = filename.split('.')
+    if parts[-1] == 'csv':
+        parts_csv = parts[-2].split('_')
+        csv_row = {
+            'device': parts_csv[-6],
+            'os': parts_csv[-5],
+            'benchmark': parts_csv[-4],
+            'size': parts_csv[-3],
+            'threads': parts_csv[-2],
+            'iteration': parts_csv[-1]
+        }
+    elif parts[-1] == 'log':
+        parts_log = parts[-2].split('_')
+        csv_row: Dict[str, Any] = {
+            'device': parts_log[-5],
+            'os': parts_log[-4],
+            'benchmark': parts_log[-3],
+            'size': parts_log[-2],
+            'threads': parts_log[-1],
+        }
     return csv_row
 
 
