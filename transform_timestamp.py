@@ -66,7 +66,6 @@ def csv_shortcuts(data):
 
 
 def write_csv_dict_with_lists(filename, csv_data):
-    # data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(csv_data)
     with open(filename, 'w') as f:
         header = list(csv_data.keys())
         writer = csv.DictWriter(f, header)
@@ -159,7 +158,6 @@ def csv_compute(data, file, ts_first, ts_xf, ts_xs):
     time_us = 0
     # TODO a line can contain NULL byte, this script does not control this use case
     for row in reader:
-        # data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
         time_str = row.get(CSV_TIME)
         power_current = row.get(CSV_POWER)
         op = row.get(CSV_OP)
@@ -178,7 +176,6 @@ def csv_compute(data, file, ts_first, ts_xf, ts_xs):
         if op == 'XS':
             ts_xs = ts_current
             data['time_xs'] = backwards_xs_time_compute(data['time'], ts_xs)
-            # data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
         if op == 'XF':
             ts_xf = ts_current
         if ts_xs:
