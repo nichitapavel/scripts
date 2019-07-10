@@ -151,6 +151,7 @@ def csv_compute(data, file, ts_first, ts_xf, ts_xs):
     reader = csv.DictReader(file)
     energy = 0
     time_ms = 0
+    # TODO a line can contain NULL byte, this script does not control this use case
     for row in reader:
         # data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
         time_str = row.get(CSV_TIME)

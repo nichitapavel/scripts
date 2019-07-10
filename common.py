@@ -93,6 +93,7 @@ def check_last_row(file):
 
 
 def first_timestamp(file):
+    # TODO a line can contain NULL byte, this script does not control this use case
     file.readline()
     ts_first = read_timestamp(file.readline().split(',')[0])
     file.seek(0)  # Set the current position in file at beginning
