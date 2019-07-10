@@ -61,8 +61,8 @@ def csv_shortcuts(data):
     data_op = data.get('op')
     data_time_xs = data.get('time_xs')
     data_time_00 = data.get('time_00')
-    data_ms = data.get('ms')
-    return data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms
+    data_us = data.get('us')
+    return data_time, data_mw, data_op, data_time_xs, data_time_00, data_us
 
 
 def write_csv_dict_with_lists(filename, csv_data):
@@ -134,7 +134,7 @@ def main(energy_csv):
 def file_compute(cwd, file):
     logger.info(f'[{cwd}][{file}]')
     mem.append(f'***************************** {file} *****************************')
-    data = {'time_str': [], 'time': [], 'mw': [], 'op': [], 'time_xs': [], 'time_00': [], 'ms': []}
+    data = {'time_str': [], 'time': [], 'mw': [], 'op': [], 'time_xs': [], 'time_00': [], 'us': []}
     ts_xs = None
     ts_xf = None
     with open(file, 'r+') as f:
@@ -156,14 +156,14 @@ def file_compute(cwd, file):
 def csv_compute(data, file, ts_first, ts_xf, ts_xs):
     reader = csv.DictReader(file)
     energy = 0
-    time_ms = 0
+    time_us = 0
     # TODO a line can contain NULL byte, this script does not control this use case
     for row in reader:
         # data_time, data_mw, data_op, data_time_xs, data_time_00, data_ms = csv_shortcuts(data)
         time_str = row.get(CSV_TIME)
         power_current = row.get(CSV_POWER)
         op = row.get(CSV_OP)
-        ms = ''
+        us = ''  # microseconds
         ts_current = read_timestamp(time_str)
         # Order of these conditions is important
         if ts_xs and not ts_xf:
@@ -172,9 +172,9 @@ def csv_compute(data, file, ts_first, ts_xf, ts_xs):
             # energy of this zone is equal to (Xn + X(n-1))/2 * (Tn-T(n-1))
             # X(n-1) is "data['mw'][-1]", Xn is "power_current"
             # T(n-1) is "data['time'][-1]", Tn is "ts_current"
-            ms = (ts_current - data['time'][-1]).microseconds
-            energy += calculate_energy(power_current, data['mw'][-1], ms)
-            time_ms += ms
+            us = (ts_current - data['time'][-1]).microseconds
+            energy += calculate_energy(power_current, data['mw'][-1], us)
+            time_us += us
         if op == 'XS':
             ts_xs = ts_current
             data['time_xs'] = backwards_xs_time_compute(data['time'], ts_xs)
@@ -191,19 +191,19 @@ def csv_compute(data, file, ts_first, ts_xf, ts_xs):
         data['mw'].append(power_current)
         data['op'].append(op)
         data['time_00'].append(ts_current - ts_first)
-        data['ms'].append(ms)
-    return ts_xs, ts_xf, energy / 1000000000, time_ms / 1000000
+        data['us'].append(us)
+    return ts_xs, ts_xf, energy / 1000000000, time_us / 1000000
 
 
-def calculate_energy(power, power_prev, ms):
+def calculate_energy(power, power_prev, us):
     """
-    Calculate energy in joules for the zone defined by Xn, X(n-1) and { [Tn - T(n-1)] => ms }
+    Calculate energy in joules for the zone defined by Xn, X(n-1) and { [Tn - T(n-1)] => us }
     :param power: Xn (current power)
     :param power_prev: X(n-1) (previous power)
-    :param ms: Tn-T(n-1)
+    :param us: Tn-T(n-1) in microseconds
     :return: float, computed energy in joules
     """
-    return (float(power) + float(power_prev)) / 2 * ms
+    return (float(power) + float(power_prev)) / 2 * us
 
 
 def pre_compute_checks(file):
