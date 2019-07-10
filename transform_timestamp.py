@@ -124,12 +124,12 @@ def main(energy_csv):
     files = get_files()
     mem.append(f'Default memory: {memory()}M')
     with Pool(4) as p:
-        results = [p.apply_async(file_compute, (cwd, energy_csv, file)) for file in files]
+        results = [p.apply_async(file_compute, (cwd, file)) for file in files]
         for result in results:
-            result.wait()
+            energy_csv.append(result.get())
 
 
-def file_compute(cwd, energy_csv, file):
+def file_compute(cwd, file):
     logger.info(f'[{cwd}][{file}]')
     mem.append(f'***************************** {file} *****************************')
     data = {'time_str': [], 'time': [], 'mw': [], 'op': [], 'time_xs': [], 'time_00': [], 'ms': []}
@@ -144,10 +144,11 @@ def file_compute(cwd, energy_csv, file):
     if ts_xs and ts_xf:
         # write_csv(file, data, mem)
         del data['time']
-        energy_csv.append(energy_dict)
         profile(mem, write_csv_dict_with_lists, f'transformed-{file}', data)
     else:
         logger.warning(f'[{cwd}][{file}][XS operation not found, skip this file]')
+        energy_dict['joules'], energy_dict['time'] = '', ''
+    return energy_dict
 
 
 def csv_compute(data, file, ts_first, ts_xf, ts_xs):
