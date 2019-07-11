@@ -1,7 +1,9 @@
-import pytest
 import datetime
 
-from common import read_timestamp, csv_name_parsing
+import pytest
+
+from common import read_timestamp, csv_name_parsing, set_cores
+from custom_exceptions import UnsupportedNumberOfCores
 
 
 @pytest.mark.parametrize(
@@ -68,3 +70,28 @@ def test_read_timestamp(timestamp, ex_timestamp):
 )
 def test_csv_name_parsing(name, expected):
     assert csv_name_parsing(name) == expected
+
+
+# TODO Tests made for a system with 8 cores/threads, how can we mock the result of os.cpu_count() call?
+@pytest.mark.parametrize(
+    "req_cores, expected",
+    [
+        (1, 1),
+        (6, 6),
+        (8, 8),
+        (4, 4),
+        (None, 6),
+    ]
+)
+def test_set_cores(req_cores, expected):
+    assert set_cores(req_cores) == expected
+
+
+# TODO Tests made for a system with 8 cores/threads, how can we mock the result of os.cpu_count() call?
+@pytest.mark.parametrize(
+    "req_cores",
+    [0, -1, 12]
+)
+def test_set_cores_exception(req_cores):
+    with pytest.raises(UnsupportedNumberOfCores):
+        set_cores(req_cores)

@@ -9,7 +9,7 @@ from optparse import OptionParser
 import psutil
 
 from common import read_timestamp, CSV_TIME, CSV_POWER, CSV_OP, check_last_row, \
-    first_timestamp, csv_name_parsing
+    first_timestamp, csv_name_parsing, set_cores
 
 logging.basicConfig(
     level=logging.INFO,
@@ -93,11 +93,13 @@ def parse_args():
     # Parsear linea de comandos
     parser = OptionParser("usage: %prog -d|--directory DIRECTORY")
     parser.add_option("-d", "--directory", action="store", type="string", dest="directory")
+    parser.add_option("-c", "--cores", action="store", type="int", dest="cores")
     (options, args) = parser.parse_args()
     if not options.directory:
         logger.error('[You must specify a working directory]')
         parser.print_help()
         sys.exit(-1)
+    options.cores = set_cores(options.cores)
     return options
 
 
@@ -124,7 +126,7 @@ def main(energy_csv):
     # TODO mem profiling not working with mp
     mem.append(f'Default memory: {memory()}M')
     # TODO a more dynamic way to assign cores
-    with Pool(4) as p:
+    with Pool(options.cores) as p:
         results = [p.apply_async(file_compute, (cwd, file)) for file in files]
         for result in results:
             energy_csv.append(result.get())

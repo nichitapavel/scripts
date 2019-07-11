@@ -1,7 +1,10 @@
 import datetime
+import os
 from typing import Dict, Any
 
 from flyingcircus.base import readline
+
+from custom_exceptions import UnsupportedNumberOfCores
 
 # Devices used in testing
 HIKEY970 = 'hikey970'
@@ -98,3 +101,25 @@ def first_timestamp(file):
     ts_first = read_timestamp(file.readline().split(',')[0])
     file.seek(0)  # Set the current position in file at beginning
     return ts_first
+
+
+def set_cores(req_cores):
+    """
+    Function to set the number of cores to be used. If the requested number of cores exceeds what the
+    system has an exception is raised, otherwise will set requested number of cores.
+    In case the number of cores is not specified it will be set with these requirements:
+    1. for systems with more than 4 cores, always will leave 2 cores for os and other computations, ie. a system
+      with 16 cores will use a maximum 14 cores for your task.
+    2. for system with less or equal to 4 cores all available cores will be used.
+    :param req_cores: integer with the requested cores set by argument '-c/--cores'
+    :return: number of cores to be used
+    """
+    sys_cores = os.cpu_count()
+    if req_cores is None:
+        if sys_cores > 4:
+            return sys_cores - 2
+        else:
+            return sys_cores
+    if req_cores > sys_cores or req_cores <= 0:
+        raise UnsupportedNumberOfCores(f'Requested cores \'{req_cores}\' is not supported, available cores: {sys_cores}')
+    return req_cores
