@@ -31,17 +31,17 @@ def log_to_file():
     return file_log
 
 
-def memory():
+def memory_usage():
     return psutil.Process().memory_full_info().vms // 1024 // 1024
 
 
 def profile(m, function, *args):
     start = datetime.datetime.now()
-    mem_1 = memory()
-    str_prf = f'm1: {memory()}MB'
+    mem_1 = memory_usage()
+    str_prf = f'm1: {memory_usage()}MB'
     ret = function(*args)
     t = datetime.datetime.now() - start
-    mem_2 = memory()
+    mem_2 = memory_usage()
     m.append(f'{function.__name__}\t{str_prf}\tm2: {mem_2}MB\t time: {t}\tmd: {mem_2 - mem_1}MB')
     return ret
 
@@ -124,7 +124,7 @@ def main(energy_csv):
     cwd = os.getcwd()
     files = get_files()
     # TODO mem profiling not working with mp
-    mem.append(f'Default memory: {memory()}M')
+    mem.append(f'Default memory: {memory_usage()}MB')
     # TODO a more dynamic way to assign cores
     with Pool(options.cores) as p:
         results = [p.apply_async(file_compute, (cwd, file)) for file in files]
