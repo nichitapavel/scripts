@@ -125,7 +125,7 @@ def backwards_xs_time_compute(data_time, ts_xs):
     return time_xs
 
 
-def csv_compute(data, file, ts_first, ts_xf, ts_xs):
+def csv_compute(data, file, ts_first, ts_xs, ts_xf):
     reader = csv.DictReader(file)
     energy = 0
     time_us = 0
@@ -176,7 +176,7 @@ def file_compute(cwd, file):
         ts_first = profile(mem, first_timestamp, f)
         profile(mem, check_last_row, f)
         ts_xs, ts_xf, energy_dict['joules'], energy_dict['time'] = \
-            profile(mem, csv_compute, data, f, ts_first, ts_xf, ts_xs)
+            profile(mem, csv_compute, data, f, ts_first, ts_xs, ts_xf)
     if ts_xs and ts_xf:
         # write_csv(file, data, mem)
         del data['time']
