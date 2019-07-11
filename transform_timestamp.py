@@ -18,6 +18,8 @@ logging.basicConfig(
     datefmt='%Y/%m/%d-%H:%M:%S'
 )
 
+logger = logging.getLogger('TRANSFORM_CSV')
+
 
 def log_to_file():
     file_log = logging.FileHandler('transform_csv.log', mode='w')
@@ -123,9 +125,6 @@ def get_files():
 
 
 def main(energy_csv):
-    global logger
-    logger = logging.getLogger('TRANSFORM_CSV')
-
     options = parse_args()
     os.chdir(options.directory)
     logger.addHandler(log_to_file())
