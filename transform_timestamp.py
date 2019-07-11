@@ -3,6 +3,7 @@ import datetime
 import logging
 import os
 import sys
+from multiprocessing import Manager
 from multiprocessing.pool import Pool
 from optparse import OptionParser
 
@@ -70,14 +71,14 @@ def memory_usage():
     return psutil.Process().memory_full_info().vms // 1024 // 1024
 
 
-def profile(m, function, *args):
+def profile(m, filename, function, *args):
     start = datetime.datetime.now()
     mem_1 = memory_usage()
     str_prf = f'm1: {memory_usage()}MB'
     ret = function(*args)
     t = datetime.datetime.now() - start
     mem_2 = memory_usage()
-    m.append(f'{function.__name__}\t{str_prf}\tm2: {mem_2}MB\t time: {t}\tmd: {mem_2 - mem_1}MB')
+    m.append(f'{filename}\t{function.__name__}\t{str_prf}\tm2: {mem_2}MB\t time: {t}\tmd: {mem_2 - mem_1}MB')
     return ret
 
 
@@ -167,20 +168,19 @@ def csv_compute(data, file, ts_first, ts_xs, ts_xf):
 
 def file_compute(cwd, file):
     logger.info(f'[{cwd}][{file}]')
-    mem.append(f'***************************** {file} *****************************')
     data = {'time_str': [], 'time': [], 'mw': [], 'op': [], 'time_xs': [], 'time_00': [], 'us': []}
     ts_xs = None
     ts_xf = None
     with open(file, 'r+') as f:
         energy_dict = csv_name_parsing(file)
-        ts_first = profile(mem, first_timestamp, f)
-        profile(mem, check_last_row, f)
+        ts_first = profile(mem, file, first_timestamp, f)
+        profile(mem, file, check_last_row, f)
         ts_xs, ts_xf, energy_dict['joules'], energy_dict['time'] = \
-            profile(mem, csv_compute, data, f, ts_first, ts_xs, ts_xf)
+            profile(mem, file, csv_compute, data, f, ts_first, ts_xs, ts_xf)
     if ts_xs and ts_xf:
         # write_csv(file, data, mem)
         del data['time']
-        profile(mem, write_csv_dict_with_lists, f'transformed-{file}', data)
+        profile(mem, file, write_csv_dict_with_lists, f'transformed-{file}', data)
     else:
         logger.warning(f'[{cwd}][{file}][XS operation not found, skip this file]')
         energy_dict['joules'], energy_dict['time'] = '', ''
@@ -230,19 +230,20 @@ def main():
     processed_data = []
 
     # TODO mem profiling not working with mp
-    mem.append(f'Default memory: {memory_usage()}MB')
     with Pool(options.cores) as p:
         results = [p.apply_async(file_compute, (cwd, file)) for file in files]
         for result in results:
             processed_data.append(result.get())
 
-    profile(mem, write_csv_list_of_dict, 'processed_data.csv', processed_data)
+    profile(mem, 'main', write_csv_list_of_dict, 'processed_data.csv', processed_data)
 
 
 if __name__ == "__main__":
     logger = logging.getLogger('TRANSFORM_CSV')
-    mem = []
-    profile(mem, main)
+    with Manager() as manager:
+        mem = manager.list()
+        profile(mem, 'global', main)
 
-    for item in mem:
-        print(item)
+        mem.sort()
+        for item in mem:
+            print(item)
