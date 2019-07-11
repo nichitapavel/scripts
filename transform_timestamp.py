@@ -104,13 +104,22 @@ def parse_args():
 
 
 def get_files():
+    """
+    Returns a list of files reverse sorted by size.
+    Bigger files are first processed to try and maximize the efficiency.
+    This does not guaranty that bigger files will always take more time
+    to process then smaller files.
+    :return: a list of string representing files in current directory
+    """
     files = os.listdir(os.curdir)
-    files_return = []
+    size_file = []
     for filename in files:
         if filename.startswith('data') and filename.endswith('.csv'):
             if f'transformed-{filename}' not in files:
-                files_return.append(filename)
-    return files_return
+                size = os.path.getsize(filename)
+                size_file.append((size, filename))
+    size_file.sort(key=lambda s: s[0], reverse=True)
+    return [file[1] for file in size_file]
 
 
 def main(energy_csv):
