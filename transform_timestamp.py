@@ -104,7 +104,7 @@ def write_csv_list_of_dict(filename, csv_data):
             writer.writeheader()
             writer.writerows(csv_data)
     except IndexError:
-        logger.warning('[NO DATA IN ENERGY CSV]')
+        logger.warning('[NO PROCESSED DATA]')
 
 
 def calculate_energy(power, power_prev, us):
