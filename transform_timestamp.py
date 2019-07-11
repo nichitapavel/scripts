@@ -18,8 +18,6 @@ logging.basicConfig(
     datefmt='%Y/%m/%d-%H:%M:%S'
 )
 
-logger = logging.getLogger('TRANSFORM_CSV')
-
 
 def csv_shortcuts(data):
     data_time = data.get('time')
@@ -222,27 +220,29 @@ def parse_args():
     return options
 
 
-def main(energy_csv):
+def main():
     options = parse_args()
     os.chdir(options.directory)
     logger.addHandler(log_to_file())
 
     cwd = os.getcwd()
     files = get_files()
+    processed_data = []
+
     # TODO mem profiling not working with mp
     mem.append(f'Default memory: {memory_usage()}MB')
-    # TODO a more dynamic way to assign cores
     with Pool(options.cores) as p:
         results = [p.apply_async(file_compute, (cwd, file)) for file in files]
         for result in results:
-            energy_csv.append(result.get())
+            processed_data.append(result.get())
+
+    profile(mem, write_csv_list_of_dict, 'processed_data.csv', processed_data)
 
 
 if __name__ == "__main__":
+    logger = logging.getLogger('TRANSFORM_CSV')
     mem = []
-    energy_data = []
-    profile(mem, main, energy_data)
-    profile(mem, write_csv_list_of_dict, 'energy.csv', energy_data)
+    profile(mem, main)
 
     for item in mem:
         print(item)
