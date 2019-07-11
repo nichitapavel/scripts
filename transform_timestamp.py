@@ -205,6 +205,7 @@ def calculate_energy(power, power_prev, us):
     return (float(power) + float(power_prev)) / 2 * us
 
 
+# TODO a line can contain NULL byte, this script does not control this use case
 def pre_compute_checks(file):
     """
     Checks in file:
