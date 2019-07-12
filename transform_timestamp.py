@@ -11,6 +11,7 @@ import psutil
 
 from common import read_timestamp, CSV_TIME, CSV_POWER, CSV_OP, check_last_row, \
     first_timestamp, csv_name_parsing, set_cores
+from plotters import power_plot
 
 logging.basicConfig(
     level=logging.INFO,
@@ -130,6 +131,7 @@ def csv_compute(data, file, ts_first, ts_xs, ts_xf):
     reader = csv.DictReader(file)
     energy = 0
     time_us = 0
+    td_dt_ref = datetime.datetime.min
     # TODO a line can contain NULL byte, this script does not control this use case
     for row in reader:
         time_str = row.get(CSV_TIME)
@@ -159,16 +161,17 @@ def csv_compute(data, file, ts_first, ts_xs, ts_xf):
 
         data['time_str'].append(time_str)
         data['time'].append(ts_current)
-        data['mw'].append(power_current)
+        data['mw'].append(float(power_current))
         data['op'].append(op)
         data['time_00'].append(ts_current - ts_first)
+        data['td_dt_00'].append(td_dt_ref + data['time_00'][-1])
         data['us'].append(us)
     return ts_xs, ts_xf, energy / 1000000000, time_us / 1000000
 
 
 def file_compute(cwd, file):
     logger.info(f'[{cwd}][{file}]')
-    data = {'time_str': [], 'time': [], 'mw': [], 'op': [], 'time_xs': [], 'time_00': [], 'us': []}
+    data = {'time_str': [], 'time': [], 'mw': [], 'op': [], 'time_xs': [], 'time_00': [], 'us': [], 'td_dt_00': []}
     ts_xs = None
     ts_xf = None
     with open(file, 'r+') as f:
@@ -178,8 +181,12 @@ def file_compute(cwd, file):
         ts_xs, ts_xf, energy_dict['joules'], energy_dict['time'] = \
             profile(mem, file, csv_compute, data, f, ts_first, ts_xs, ts_xf)
     if ts_xs and ts_xf:
-        # write_csv(file, data, mem)
-        del data['time']
+        marks = [
+            datetime.datetime.min + (ts_xs - ts_first),
+            datetime.datetime.min + (ts_xf-ts_first)
+        ]
+        profile(mem, file, power_plot, file, data['td_dt_00'], data['mw'], marks)
+        del data['time'], data['td_dt_00']
         profile(mem, file, write_csv_dict_with_lists, f'transformed-{file}', data)
     else:
         logger.warning(f'[{cwd}][{file}][XS operation not found, skip this file]')
