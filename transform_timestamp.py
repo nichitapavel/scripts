@@ -98,10 +98,15 @@ def write_csv_dict_with_lists(filename, csv_data):
 
 def write_csv_list_of_dict(filename, csv_data):
     try:
-        with open(filename, 'w') as f:
+        if os.access(filename, os.F_OK):
+            open_mode = 'a'
+        else:
+            open_mode = 'w'
+        with open(filename, open_mode) as f:
             header = csv_data[0].keys()
             writer = csv.DictWriter(f, header)
-            writer.writeheader()
+            if f.mode == 'w':
+                writer.writeheader()
             writer.writerows(csv_data)
     except IndexError:
         logger.warning('[NO PROCESSED DATA]')
