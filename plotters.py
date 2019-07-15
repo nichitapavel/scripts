@@ -76,14 +76,28 @@ def get_yaxis_upper_value(yax_max, step=2000):
     return max_value
 
 
-def set_mark(axes, mark_x, mark):
-    line = plt.axvline(x=mark_x)
-    line.set_color('red')
-    y_upper_limit = axes.get_ylim()[1]
-    if mark == 'XS':
-        plt.text(mark_x, y_upper_limit * 0.9, mark, fontsize=16)
-    else:
-        plt.text(mark_x, y_upper_limit * 0.8, mark, fontsize=16)
+def set_marks(axes, x_data, marks):
+    """
+    Draws vertical red lines with associated text on the plot
+    :param axes: the plot area
+    :param x_data: all data for the x axis, used to extract the x mark where to draw on plot
+    :param marks: a list of tuples, where 1st item from tuple is the position
+    of the x mark in 'x_data' and 2nd is the text associated with it
+    :return:
+    """
+    i = 0
+    for p, s in marks:
+        line = plt.axvline(x=x_data[p])
+        line.set_color('red')
+        # Currently we consider that the marks will always come in pair:
+        # start and finish, we use the number of the appearance to decide
+        # which sits higher or lower, this is done to avoid text superposing
+        if i % 2 == 0:
+            y_upper_limit = axes.get_ylim()[1] * 0.9
+        else:
+            y_upper_limit = axes.get_ylim()[1] * 0.8
+        plt.text(x=x_data[p], y=y_upper_limit, s=s, fontsize=16)
+        i += 1
 
 
 def set_x_as_date(ax, data):
@@ -156,8 +170,7 @@ def power_plot(filename, x_axis, y_axis, marks):
     set_x_as_date(ax, x_axis)
 
     plt.plot(x_axis, y_axis)
-    set_mark(ax, marks[0], 'XS')
-    set_mark(ax, marks[1], 'XF')
+    set_marks(ax, x_axis, marks)
 
     # ******************** CAMBIAR TAMAÑO TEXTO ********************
     # ax.axes.title.set_fontsize(25)

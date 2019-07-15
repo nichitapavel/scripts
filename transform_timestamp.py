@@ -149,11 +149,22 @@ def csv_compute(data, file, ts_first, ts_xs, ts_xf):
             us = (ts_current - data['time'][-1]).microseconds
             energy += calculate_energy(power_current, data['mw'][-1], us)
             time_us += us
-        if op == 'XS':
-            ts_xs = ts_current
-            data['time_xs'] = backwards_xs_time_compute(data['time'], ts_xs)
-        if op == 'XF':
-            ts_xf = ts_current
+        if op != '':
+            if op == 'XS':
+                ts_xs = ts_current
+                data['time_xs'] = backwards_xs_time_compute(data['time'], ts_xs)
+            if op == 'XF':
+                ts_xf = ts_current
+
+            # Here we save the position in data dict, since all lists in data have
+            # the same length, the position will always show data from the same row
+            # position = reader.line_num - 2, because reader.line_num tells us the
+            # position in the csv file, it starts with 1 (not 0) and the line nº 1
+            # is the header, the first line with data is nº 2, but in our dict with lists
+            # is 0, hence the '- 2'
+            # op is the operation, we have it in our data dict already, but is big and
+            # mostly empty, and this will only have the values to be marked in the plot
+            data['pos_and_marks'].append((reader.line_num - 2, op))
         if ts_xs:
             data['time_xs'].append(
                 (ts_current - ts_xs).total_seconds()
@@ -166,12 +177,16 @@ def csv_compute(data, file, ts_first, ts_xs, ts_xf):
         data['time_00'].append(ts_current - ts_first)
         data['td_dt_00'].append(td_dt_ref + data['time_00'][-1])
         data['us'].append(us)
+
     return ts_xs, ts_xf, energy / 1000000000, time_us / 1000000
 
 
 def file_compute(cwd, file):
     logger.info(f'[{cwd}][{file}]')
-    data = {'time_str': [], 'time': [], 'mw': [], 'op': [], 'time_xs': [], 'time_00': [], 'us': [], 'td_dt_00': []}
+    data = {
+        'time_str': [], 'time': [], 'mw': [], 'op': [], 'time_xs': [],
+        'time_00': [], 'us': [], 'td_dt_00': [], 'pos_and_marks': []
+    }
     ts_xs = None
     ts_xf = None
     with open(file, 'r+') as f:
@@ -181,12 +196,8 @@ def file_compute(cwd, file):
         ts_xs, ts_xf, energy_dict['joules'], energy_dict['time'] = \
             profile(mem, file, csv_compute, data, f, ts_first, ts_xs, ts_xf)
     if ts_xs and ts_xf:
-        marks = [
-            datetime.datetime.min + (ts_xs - ts_first),
-            datetime.datetime.min + (ts_xf-ts_first)
-        ]
-        profile(mem, file, power_plot, file, data['td_dt_00'], data['mw'], marks)
-        del data['time'], data['td_dt_00']
+        profile(mem, file, power_plot, file, data['td_dt_00'], data['mw'], data['pos_and_marks'])
+        del data['time'], data['td_dt_00'], data['pos_and_marks']
         profile(mem, file, write_csv_dict_with_lists, f'transformed-{file}', data)
     else:
         logger.warning(f'[{cwd}][{file}][XS operation not found, skip this file]')
