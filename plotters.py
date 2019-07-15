@@ -91,17 +91,17 @@ def set_x_as_date(ax, data):
     diff = data[-1] - data[0]
     # Set ticks and strings on X axes
     # Less than 5 minutes
-    if diff < timedelta(minutes=5):
+    if diff <= timedelta(minutes=5):
         major_x_locator = mdates.SecondLocator(interval=10)
         minor_x_locator = mdates.SecondLocator(interval=5)
         date_format = mdates.DateFormatter('%Mm:%Ss')
     # Between 5 minutes and 10 minutes
-    elif timedelta(minutes=5) < diff < timedelta(minutes=10):
+    elif timedelta(minutes=5) < diff <= timedelta(minutes=10):
         major_x_locator = mdates.SecondLocator(interval=30)
         minor_x_locator = mdates.SecondLocator(interval=15)
         date_format = mdates.DateFormatter('%Mm:%Ss')
     # Between 10 minutes and 30 minutes
-    elif timedelta(minutes=10) < diff < timedelta(minutes=30):
+    elif timedelta(minutes=10) < diff <= timedelta(minutes=30):
         major_x_locator = mdates.MinuteLocator(interval=4)
         minor_x_locator = mdates.MinuteLocator(interval=2)
         date_format = mdates.DateFormatter('%Mm')
