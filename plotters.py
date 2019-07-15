@@ -137,20 +137,24 @@ def power_plot(filename, x_axis, y_axis, marks):
     ax.grid(True, which='both')
     ax.set_ylabel(config[CfgLabel.ylabel])
     ax.set_xlabel(config[CfgLabel.xlabel])
-    yaxis_max = get_yaxis_upper_value(max(y_axis))
-    ax.set_ylim(0, yaxis_max)
+    ax.set_ylim(
+        0,
+        get_yaxis_upper_value(max(y_axis))
+    )
+
     # Set ticks and strings on Y axes
-    major_y_locator = MultipleLocator(1000)
-    minor_y_locator = MultipleLocator(500)
-    ax.yaxis.set_major_locator(major_y_locator)
-    ax.yaxis.set_minor_locator(minor_y_locator)
-    y_axis_format = FuncFormatter(thousands_to_k)
-    ax.yaxis.set_major_formatter(y_axis_format)
+    ax.yaxis.set_major_locator(MultipleLocator(1000))
+    ax.yaxis.set_minor_locator(MultipleLocator(500))
+    ax.yaxis.set_major_formatter(FuncFormatter(thousands_to_k))
+
     # The upper-right coordinate is calculated by the sum of ([0] + [2]. [1] + [3])
     # in this case the lower-left coordinate is (0.05, 0.06) and the upper-right is
     # (0.05 + 0.92, 0.06 + 0.9) which equals to (0.97, 0.96)
     ax.set_position(pos=[0.06, 0.09, 0.91, 0.85])
+
+    # configure the x axis locators and ticks format
     set_x_as_date(ax, x_axis)
+
     plt.plot(x_axis, y_axis)
     set_mark(ax, marks[0], 'XS')
     set_mark(ax, marks[1], 'XF')
