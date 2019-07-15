@@ -62,7 +62,7 @@ class CfgLabel:
     layout_rect = 'layout_rect'
 
 
-def thousands_to_k(x):
+def thousands_to_k(x, pos=None):
     x = int(divmod(x, 1000)[0])
     return f'{x}k'
 
