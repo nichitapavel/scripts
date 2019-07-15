@@ -63,9 +63,17 @@ def test_read_timestamp(timestamp, ex_timestamp):
         #        'TO IMPLEMENTE, SHOULD FAIL, HOW IT SHOULD FAIL?'
         # )
         (
-            'metrics_metrics_hikey970_android_bt_s_1.log',
+            'metrics_hikey970_android_bt_s_1.log',
             {'device': 'hikey970', 'os': 'android', 'benchmark': 'bt', 'size': 's', 'threads': '1'}
-        )
+        ),
+        (
+            '03_release_data_odroidxu4a_android_is_b_2_108.csv',
+            {'type': 'release', 'device': 'odroidxu4a', 'os': 'android', 'benchmark': 'is', 'size': 'b', 'threads': '2', 'iteration': '108'}
+        ),
+        (
+            '03_debug_metrics_hikey970_android_bt_w_2.log',
+            {'type': 'debug', 'device': 'hikey970', 'os': 'android', 'benchmark': 'bt', 'size': 'w', 'threads': '2'}
+        ),
     ]
 )
 def test_csv_name_parsing(name, expected):

@@ -27,8 +27,9 @@ CSV_OP = 'Operation'
 
 
 # Files naming scheme:
-# XXXXXXXXX_<device>_<os>_<bench>_<class>_<threads>[_<iteration>].<suffix>
+# [<type>_]XXXXXXXXX_<device>_<os>_<bench>_<class>_<threads>[_<iteration>].<suffix>
 # Where XXXXXXXXX is whatever, it must not contain '_' char
+# <type> is the app mode, currently 'release' or 'debug'
 # <device> is the name of the device, example: 'hikey970', 'odroidxu4a'...
 # <os> is the operating system, either 'android' or 'linux'
 # <bench> is the name of npb benchmark, usually has a length of 2 chars, examples: 'is', 'fe'...
@@ -41,23 +42,35 @@ def csv_name_parsing(filename):
     parts = filename.split('.')
     if parts[-1] == 'csv':
         parts_csv = parts[-2].split('_')
-        csv_row = {
+        csv_row = {}
+        try:
+            csv_row.update({'type': parts_csv[-8]})
+        except IndexError:
+            csv_row.update({'type': ''})
+            pass
+        csv_row.update({
             'device': parts_csv[-6],
             'os': parts_csv[-5],
             'benchmark': parts_csv[-4],
             'size': parts_csv[-3],
             'threads': parts_csv[-2],
             'iteration': parts_csv[-1]
-        }
+        })
     elif parts[-1] == 'log':
         parts_log = parts[-2].split('_')
-        csv_row: Dict[str, Any] = {
+        csv_row = {}
+        try:
+            csv_row.update({'type': parts_log[-7]})
+        except IndexError:
+            csv_row.update({'type': ''})
+            pass
+        csv_row.update({
             'device': parts_log[-5],
             'os': parts_log[-4],
             'benchmark': parts_log[-3],
             'size': parts_log[-2],
             'threads': parts_log[-1],
-        }
+        })
     return csv_row
 
 
