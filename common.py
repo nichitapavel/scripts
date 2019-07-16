@@ -1,10 +1,10 @@
 import datetime
 import os
-from typing import Dict, Any
 
 from flyingcircus.base import readline
 
 from custom_exceptions import UnsupportedNumberOfCores
+from transform_timestamp import logger
 
 # Devices used in testing
 HIKEY970 = 'hikey970'
@@ -102,9 +102,12 @@ def check_last_row(file):
             rows.append(row)
         else:
             break
-    if len(rows[0]) != len(rows[1]):  # Is the last row valid?
-        file.seek(file.tell() - len(rows[0]))
-        file.truncate()
+    if len(rows) < 2:
+        logger.warning(f'[{file}][Pogit cssibly empty]')
+    else:
+        if len(rows[0]) != len(rows[1]):  # Is the last row valid?
+            file.seek(file.tell() - len(rows[0]))
+            file.truncate()
     file.seek(0)  # Set the current position in file at beginning
 
 
