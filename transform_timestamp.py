@@ -197,7 +197,7 @@ def file_compute(cwd, file):
     with open(file, 'r+') as f:
         energy_dict = csv_name_parsing(file)
         ts_first = profile(mem, file, first_timestamp, f)
-        profile(mem, file, check_last_row, f)
+        profile(mem, file, check_last_row, f, logger)
         ts_xs, ts_xf, energy_dict['joules'], energy_dict['time'] = \
             profile(mem, file, csv_compute, data, f, ts_first, ts_xs, ts_xf)
     if ts_xs and ts_xf:

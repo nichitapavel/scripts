@@ -4,7 +4,6 @@ import os
 from flyingcircus.base import readline
 
 from custom_exceptions import UnsupportedNumberOfCores
-from transform_timestamp import logger
 
 # Devices used in testing
 HIKEY970 = 'hikey970'
@@ -93,7 +92,7 @@ def is_valid_last_row(rows):
     return True
 
 
-def check_last_row(file):
+def check_last_row(file, logger):
     rows = []  # Save the last 2 rows here
 
     # Only iterate 2 times to get the last 2 rows
@@ -103,7 +102,7 @@ def check_last_row(file):
         else:
             break
     if len(rows) < 2:
-        logger.warning(f'[{file}][Pogit cssibly empty]')
+        logger.warning(f'[{file.name}][Possibly empty]')
     else:
         if len(rows[0]) != len(rows[1]):  # Is the last row valid?
             file.seek(file.tell() - len(rows[0]))
