@@ -31,6 +31,8 @@ def metrics_file_process(cwd: str, file: str) -> [dict]:
                 i, metric_dict = block_process(i, lines, name_parsed)
                 data.append(metric_dict)
             i += 1
+    # mark this file as processed
+    open(f'read-{file}', 'w').close()
     return data
 
 
@@ -79,7 +81,8 @@ def get_files():
     files_ret = []
     for filename in files:
         if filename.startswith('03') and filename.endswith('.log'):
-            files_ret.append(filename)
+            if f'read-{filename}' not in files:
+                files_ret.append(filename)
     return files_ret
 
 
