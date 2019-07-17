@@ -66,7 +66,16 @@ def backwards_xs_time_compute(data_time, ts_xs):
     return time_xs
 
 
-def csv_compute(data, file, ts_first, ts_xs, ts_xf):
+def csv_process(data: dict, file: str, ts_first, ts_xs, ts_xf):
+    """
+    Opens 'file' in csv form, applies a series of transformations for each csv row
+    :param data: a dict,
+    :param file: string, file name
+    :param ts_first: timestamp, from first row of 'file'
+    :param ts_xs: timestamp, when XS marks appeared in 'file
+    :param ts_xf: timestamp, when XF marks appeared in 'file
+    :return: timestamp x2: XS and XF if found, floats 2x: computed energy (joules) and time (seconds)
+    """
     reader = csv.DictReader(file)
     energy = 0
     time_us = 0
@@ -120,7 +129,7 @@ def csv_compute(data, file, ts_first, ts_xs, ts_xf):
     return ts_xs, ts_xf, energy / 1000000000, time_us / 1000000
 
 
-def file_compute(cwd, file):
+def data_file_process(cwd, file):
     logger.info(f'[{cwd}][{file}]')
     data = {
         'time_str': [], 'time': [], 'mw': [], 'op': [], 'time_xs': [],
@@ -133,7 +142,7 @@ def file_compute(cwd, file):
         ts_first = profile(mem, file, first_timestamp, f)
         profile(mem, file, check_last_row, f, logger)
         ts_xs, ts_xf, energy_dict['joules'], energy_dict['time'] = \
-            profile(mem, file, csv_compute, data, f, ts_first, ts_xs, ts_xf)
+            profile(mem, file, csv_process, data, f, ts_first, ts_xs, ts_xf)
     if ts_xs and ts_xf:
         profile(mem, file, power_plot, file, data['td_dt_00'], data['mw'], data['pos_and_marks'])
         del data['time'], data['td_dt_00'], data['pos_and_marks']
@@ -179,7 +188,7 @@ def main():
 
     # TODO mem profiling not working with mp
     with Pool(options.cores) as p:
-        results = [p.apply_async(file_compute, (cwd, file)) for file in files]
+        results = [p.apply_async(data_file_process, (cwd, file)) for file in files]
         for result in results:
             processed_data.append(result.get())
 
