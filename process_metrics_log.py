@@ -12,8 +12,8 @@ logging.basicConfig(
 )
 
 
-
-def metrics_compute(file):
+def metrics_compute(cwd, file):
+    logger.info(f'[{cwd}][{file}]')
     data = []
     name_parsed = csv_name_parsing(file)
     with open(file, 'r') as f:
@@ -73,7 +73,7 @@ def main():
 
     # TODO mem profiling not working with mp
     with Pool(options.cores) as p:
-        results = [p.apply_async(metrics_compute, (file,)) for file in files]
+        results = [p.apply_async(metrics_compute, (cwd, file)) for file in files]
         for result in results:
             processed_data.extend(result.get())
 
@@ -81,6 +81,7 @@ def main():
 
 
 if __name__ == "__main__":
+    logger = logging.getLogger('METRICS')
     with Manager() as manager:
         mem = manager.list()
         profile(mem, 'global', main)
