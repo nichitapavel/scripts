@@ -36,35 +36,15 @@ def test_read_timestamp(timestamp, ex_timestamp):
     [
         (
             'data-debug_hikey970_android_is_b_1_050.csv',
-            {'device': 'hikey970', 'os': 'android', 'benchmark': 'is', 'size': 'b', 'threads': '1', 'iteration': '050'}
+            {'type': '', 'device': 'hikey970', 'os': 'android', 'benchmark': 'is', 'size': 'b', 'threads': '1', 'iteration': '050'}
         ),
         (
-            'data-debug_odroidxu4a_android_bt_w_2_050.csv',
-            {'device': 'odroidxu4a', 'os': 'android', 'benchmark': 'bt', 'size': 'w', 'threads': '2', 'iteration': '050'}
+            'data-release_odroidxu4a_linux_mg_b_4_050.csv',
+            {'type': '', 'device': 'odroidxu4a', 'os': 'linux', 'benchmark': 'mg', 'size': 'b', 'threads': '4', 'iteration': '050'}
         ),
         (
             'data_rock960_android_mg_b_4_050.csv',
-            {'device': 'rock960', 'os': 'android', 'benchmark': 'mg', 'size': 'b', 'threads': '4', 'iteration': '050'}
-        ),
-        (
-            'data-release_hikey970_linux_is_b_1_050.csv',
-            {'device': 'hikey970', 'os': 'linux', 'benchmark': 'is', 'size': 'b', 'threads': '1', 'iteration': '050'}
-        ),
-        (
-            'data_odroidxu4a_linux_bt_w_2_050.csv',
-            {'device': 'odroidxu4a', 'os': 'linux', 'benchmark': 'bt', 'size': 'w', 'threads': '2', 'iteration': '050'}
-        ),
-        (
-            'data-release_rock960_linux_mg_b_4_050.csv',
-            {'device': 'rock960', 'os': 'linux', 'benchmark': 'mg', 'size': 'b', 'threads': '4', 'iteration': '050'}
-        ),
-        # (
-        #         'data_odroidxu4a_is_b_2_001',
-        #        'TO IMPLEMENTE, SHOULD FAIL, HOW IT SHOULD FAIL?'
-        # )
-        (
-            'metrics_hikey970_android_bt_s_1.log',
-            {'device': 'hikey970', 'os': 'android', 'benchmark': 'bt', 'size': 's', 'threads': '1'}
+            {'type': '', 'device': 'rock960', 'os': 'android', 'benchmark': 'mg', 'size': 'b', 'threads': '4', 'iteration': '050'}
         ),
         (
             '03_release_data_odroidxu4a_android_is_b_2_108.csv',
@@ -74,6 +54,14 @@ def test_read_timestamp(timestamp, ex_timestamp):
             '03_debug_metrics_hikey970_android_bt_w_2.log',
             {'type': 'debug', 'device': 'hikey970', 'os': 'android', 'benchmark': 'bt', 'size': 'w', 'threads': '2'}
         ),
+        (
+            'metrics_hikey970_android_bt_s_1.log',
+            {'type': '', 'device': 'hikey970', 'os': 'android', 'benchmark': 'bt', 'size': 's', 'threads': '1'}
+        )
+        # (
+        #         'data_odroidxu4a_is_b_2_001',
+        #        'TO IMPLEMENTE, SHOULD FAIL, HOW IT SHOULD FAIL? MAYBE JUST RETURN THE DICT WITH EMPTY VALUES (AKA '')'
+        # )
     ]
 )
 def test_csv_name_parsing(name, expected):
