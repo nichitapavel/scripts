@@ -171,7 +171,7 @@ def get_files():
 def main():
     options = parse_args(logger)
     os.chdir(options.directory)
-    logger.addHandler(log_to_file())
+    logger.addHandler(log_to_file('transform.log'))
 
     cwd = os.getcwd()
     files = get_files()

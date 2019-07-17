@@ -11,7 +11,6 @@ logging.basicConfig(
     datefmt='%Y/%m/%d-%H:%M:%S'
 )
 
-logger = logging.getLogger('TRANSFORM_METRICS')
 
 
 def metrics_compute(file):
@@ -65,7 +64,7 @@ def get_files():
 def main():
     options = parse_args(logger)
     os.chdir(options.directory)
-    logger.addHandler(log_to_file())
+    logger.addHandler(log_to_file('metrics.log'))
 
     cwd = os.getcwd()
     files = get_files()

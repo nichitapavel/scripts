@@ -152,8 +152,8 @@ def set_cores(req_cores):
     return req_cores
 
 
-def log_to_file():
-    file_log = logging.FileHandler('transform_csv.log', mode='w')
+def log_to_file(filename):
+    file_log = logging.FileHandler(filename, mode='w')
     file_log.setLevel(logging.INFO)
     file_log.setFormatter(
         logging.Formatter(
