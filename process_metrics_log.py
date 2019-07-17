@@ -22,15 +22,15 @@ def metrics_compute(file):
         lines = f.readlines()
         i = 0
         while i < len(lines):
-            try:
-                if 'Run:' in lines[i]:
-                    metric_dict = {}
-                    metric_dict.update(name_parsed)
-                    iteration = int(lines[i].split()[2])
-                    metric_dict.update({'iteration': f'{iteration:03}'})
-                    time_npb = ''
-                    mops = ''
-                    i += 1
+            if 'Run:' in lines[i]:
+                metric_dict = {}
+                metric_dict.update(name_parsed)
+                iteration = int(lines[i].split()[2])
+                metric_dict.update({'iteration': f'{iteration:03}'})
+                time_npb = ''
+                mops = ''
+                i += 1
+                try:
                     while 'Run:' not in lines[i]:
                         if 'Time in ' in lines[i]:
                             time_npb = float(lines[i].split()[5])
@@ -38,10 +38,11 @@ def metrics_compute(file):
                             mops = float(lines[i].split()[4])
                         i += 1
                     i -= 1
-                    metric_dict.update({'time_npb': time_npb, 'mops': mops})
-                    data.append(metric_dict)
-            except IndexError:
-                pass
+                except IndexError:
+                    pass
+                metric_dict.update({'time_npb': time_npb, 'mops': mops})
+                data.append(metric_dict)
+
             i += 1
     return data
 
