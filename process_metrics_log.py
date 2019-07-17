@@ -2,8 +2,7 @@ import logging
 import os
 from multiprocessing import Manager, Pool
 
-from common import csv_name_parsing
-from transform_timestamp import profile, parse_args, log_to_file, write_csv_list_of_dict
+from common import csv_name_parsing, log_to_file, profile, write_csv_list_of_dict, parse_args
 
 logging.basicConfig(
     level=logging.INFO,
@@ -64,7 +63,7 @@ def get_files():
 
 
 def main():
-    options = parse_args()
+    options = parse_args(logger)
     os.chdir(options.directory)
     logger.addHandler(log_to_file())
 
@@ -79,7 +78,7 @@ def main():
         for result in results:
             processed_data.extend(result.get())
 
-    profile(mem, 'main', write_csv_list_of_dict, 'metrics_data.csv', processed_data)
+    profile(mem, 'main', write_csv_list_of_dict, 'metrics_data.csv', processed_data, logger)
 
 
 if __name__ == "__main__":

@@ -2,23 +2,13 @@ import csv
 import datetime
 import logging
 import os
-import sys
 from multiprocessing import Manager
 from multiprocessing.pool import Pool
-from optparse import OptionParser
-
-import psutil
 
 from common import read_timestamp, CSV_TIME, CSV_POWER, CSV_OP, check_last_row, \
-    first_timestamp, csv_name_parsing, set_cores
+    first_timestamp, csv_name_parsing, log_to_file, profile, write_csv_dict_with_lists, \
+    write_csv_list_of_dict, parse_args
 from plotters import power_plot
-
-logging.basicConfig(
-    level=logging.INFO,
-    # filename='thread-flask-pminfo.log',
-    format='[%(process)d][%(asctime)s.%(msecs)03d][%(name)s][%(levelname)s]%(message)s',
-    datefmt='%Y/%m/%d-%H:%M:%S'
-)
 
 
 def csv_shortcuts(data):
@@ -54,62 +44,6 @@ def pre_compute_checks(file):
             ts_xf = read_timestamp(row.get(CSV_TIME))
 
     return ts_xs, ts_xf, ts_first
-
-
-def log_to_file():
-    file_log = logging.FileHandler('transform_csv.log', mode='w')
-    file_log.setLevel(logging.INFO)
-    file_log.setFormatter(
-        logging.Formatter(
-            '[%(process)d][%(asctime)s.%(msecs)03d][%(name)s][%(levelname)s]%(message)s',
-            datefmt='%Y/%m/%d-%H:%M:%S'
-        )
-    )
-    return file_log
-
-
-def memory_usage():
-    return psutil.Process().memory_full_info().vms // 1024 // 1024
-
-
-def profile(m, filename, function, *args):
-    start = datetime.datetime.now()
-    mem_1 = memory_usage()
-    str_prf = f'm1: {memory_usage()}MB'
-    ret = function(*args)
-    t = datetime.datetime.now() - start
-    mem_2 = memory_usage()
-    m.append(f'{filename}\t{function.__name__}\t{str_prf}\tm2: {mem_2}MB\t time: {t}\tmd: {mem_2 - mem_1}MB')
-    return ret
-
-
-def write_csv_dict_with_lists(filename, csv_data):
-    with open(filename, 'w') as f:
-        header = list(csv_data.keys())
-        writer = csv.DictWriter(f, header)
-        writer.writeheader()
-        # upper range defined by any list from the csv_data, since they all are equal
-        for i in range(0, len(csv_data[header[0]])):
-            data_dict = {}
-            for key in header:
-                data_dict[key] = csv_data[key][i]
-            writer.writerow(data_dict)
-
-
-def write_csv_list_of_dict(filename, csv_data):
-    try:
-        if os.access(filename, os.F_OK):
-            open_mode = 'a'
-        else:
-            open_mode = 'w'
-        with open(filename, open_mode) as f:
-            header = csv_data[0].keys()
-            writer = csv.DictWriter(f, header)
-            if f.mode == 'w':
-                writer.writeheader()
-            writer.writerows(csv_data)
-    except IndexError:
-        logger.warning('[NO PROCESSED DATA]')
 
 
 def calculate_energy(power, power_prev, us):
@@ -234,22 +168,8 @@ def get_files():
     return [file[1] for file in size_file]
 
 
-def parse_args():
-    # Parsear linea de comandos
-    parser = OptionParser("usage: %prog -d|--directory DIRECTORY")
-    parser.add_option("-d", "--directory", action="store", type="string", dest="directory")
-    parser.add_option("-c", "--cores", action="store", type="int", dest="cores")
-    (options, args) = parser.parse_args()
-    if not options.directory:
-        logger.error('[You must specify a working directory]')
-        parser.print_help()
-        sys.exit(-1)
-    options.cores = set_cores(options.cores)
-    return options
-
-
 def main():
-    options = parse_args()
+    options = parse_args(logger)
     os.chdir(options.directory)
     logger.addHandler(log_to_file())
 
@@ -263,7 +183,7 @@ def main():
         for result in results:
             processed_data.append(result.get())
 
-    profile(mem, 'main', write_csv_list_of_dict, 'processed_data.csv', processed_data)
+    profile(mem, 'main', write_csv_list_of_dict, 'processed_data.csv', processed_data, logger)
 
 
 if __name__ == "__main__":

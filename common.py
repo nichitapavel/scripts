@@ -1,9 +1,21 @@
+import csv
 import datetime
+import logging
 import os
+import sys
+from optparse import OptionParser
 
+import psutil
 from flyingcircus.base import readline
 
 from custom_exceptions import UnsupportedNumberOfCores
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='[%(process)d][%(asctime)s.%(msecs)03d][%(name)s][%(levelname)s]%(message)s',
+    datefmt='%Y/%m/%d-%H:%M:%S'
+)
+
 
 # Devices used in testing
 HIKEY970 = 'hikey970'
@@ -138,3 +150,74 @@ def set_cores(req_cores):
     if req_cores > sys_cores or req_cores <= 0:
         raise UnsupportedNumberOfCores(f'Requested cores \'{req_cores}\' is not supported, available cores: {sys_cores}')
     return req_cores
+
+
+def log_to_file():
+    file_log = logging.FileHandler('transform_csv.log', mode='w')
+    file_log.setLevel(logging.INFO)
+    file_log.setFormatter(
+        logging.Formatter(
+            '[%(process)d][%(asctime)s.%(msecs)03d][%(name)s][%(levelname)s]%(message)s',
+            datefmt='%Y/%m/%d-%H:%M:%S'
+        )
+    )
+    return file_log
+
+
+def memory_usage():
+    return psutil.Process().memory_full_info().vms // 1024 // 1024
+
+
+def profile(m, filename, function, *args):
+    start = datetime.datetime.now()
+    mem_1 = memory_usage()
+    str_prf = f'm1: {memory_usage()}MB'
+    ret = function(*args)
+    t = datetime.datetime.now() - start
+    mem_2 = memory_usage()
+    m.append(f'{filename}\t{function.__name__}\t{str_prf}\tm2: {mem_2}MB\t time: {t}\tmd: {mem_2 - mem_1}MB')
+    return ret
+
+
+def write_csv_dict_with_lists(filename, csv_data):
+    with open(filename, 'w') as f:
+        header = list(csv_data.keys())
+        writer = csv.DictWriter(f, header)
+        writer.writeheader()
+        # upper range defined by any list from the csv_data, since they all are equal
+        for i in range(0, len(csv_data[header[0]])):
+            data_dict = {}
+            for key in header:
+                data_dict[key] = csv_data[key][i]
+            writer.writerow(data_dict)
+
+
+def write_csv_list_of_dict(filename, csv_data, logger):
+    try:
+        if os.access(filename, os.F_OK):
+            open_mode = 'a'
+        else:
+            open_mode = 'w'
+        with open(filename, open_mode) as f:
+            header = csv_data[0].keys()
+            writer = csv.DictWriter(f, header)
+            if f.mode == 'w':
+                writer.writeheader()
+            writer.writerows(csv_data)
+    except IndexError:
+        logger.warning('[NO PROCESSED DATA]')
+
+
+def parse_args(logger):
+    # Parsear linea de comandos
+    parser = OptionParser("usage: %prog -d|--directory DIRECTORY")
+    parser.add_option("-d", "--directory", action="store", type="string", dest="directory")
+    parser.add_option("-c", "--cores", action="store", type="int", dest="cores")
+    (options, args) = parser.parse_args()
+    if not options.directory:
+        # This logger line will not be saved to file
+        logger.error('[You must specify a working directory]')
+        parser.print_help()
+        sys.exit(-1)
+    options.cores = set_cores(options.cores)
+    return options
