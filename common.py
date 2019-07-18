@@ -221,3 +221,7 @@ def parse_args(logger):
         sys.exit(-1)
     options.cores = set_cores(options.cores)
     return options
+
+
+def sort_list_of_dict(l: list):
+    l.sort(key=lambda s: (s['type'], s['device'], s['os'], s['benchmark'], s['size'], s['threads'], s['iteration']))

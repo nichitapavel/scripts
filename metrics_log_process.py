@@ -2,7 +2,7 @@ import logging
 import os
 from multiprocessing import Manager, Pool
 
-from common import csv_name_parsing, log_to_file, profile, write_csv_list_of_dict, parse_args
+from common import csv_name_parsing, log_to_file, profile, write_csv_list_of_dict, parse_args, sort_list_of_dict
 
 logging.basicConfig(
     level=logging.INFO,
@@ -100,6 +100,7 @@ def main():
         for result in results:
             processed_data.extend(result.get())
 
+    sort_list_of_dict(processed_data)
     profile(mem, 'main', write_csv_list_of_dict, 'metrics_data.csv', processed_data, logger)
 
 

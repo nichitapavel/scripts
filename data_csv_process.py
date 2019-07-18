@@ -7,7 +7,7 @@ from multiprocessing.pool import Pool
 
 from common import read_timestamp, CSV_TIME, CSV_POWER, CSV_OP, check_last_row, \
     first_timestamp, csv_name_parsing, log_to_file, profile, write_csv_dict_with_lists, \
-    write_csv_list_of_dict, parse_args
+    write_csv_list_of_dict, parse_args, sort_list_of_dict
 from plotters import power_plot
 
 
@@ -192,6 +192,7 @@ def main():
         for result in results:
             processed_data.append(result.get())
 
+    sort_list_of_dict(processed_data)
     profile(mem, 'main', write_csv_list_of_dict, 'processed_data.csv', processed_data, logger)
 
 
