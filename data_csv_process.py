@@ -152,7 +152,7 @@ def data_file_process(cwd, file):
         # Meta cache system: we use the EXISTENCE of file that starts with 'transformed-' (empty or with data)
         # to NOT re-analyze older files, for cases where new files are added and we run the script
         # again it will prevent adding repeated lines in processed_data.csv.
-        open(f'transformed-{file}', 'w')
+        open(f'transformed-{file}', 'w').close()
         energy_dict['joules'], energy_dict['time'] = '', ''
 
     return energy_dict
