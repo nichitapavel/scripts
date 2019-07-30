@@ -72,7 +72,7 @@ def block_process(i: int, lines: list, name_parsed: dict) -> 'int,dict':
     return i, metric_dict
 
 
-def get_files():
+def get_files(filter):
     """
     Filter files from current directory.
     :return: a list of string, each string is a file name from current directory
@@ -80,7 +80,7 @@ def get_files():
     files = os.listdir(os.curdir)
     files_ret = []
     for filename in files:
-        if filename.startswith('03') and filename.endswith('.log'):
+        if filename.startswith(filter) and filename.endswith('.log'):
             if f'read-{filename}' not in files:
                 files_ret.append(filename)
     return files_ret
@@ -92,7 +92,7 @@ def main():
     logger.addHandler(log_to_file('metrics.log'))
 
     cwd = os.getcwd()
-    files = get_files()
+    files = get_files(options.starts_with)
     processed_data = []
 
     with Pool(options.cores) as p:
