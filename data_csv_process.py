@@ -158,7 +158,7 @@ def data_file_process(cwd, file):
     return energy_dict
 
 
-def get_files():
+def get_files(filter):
     """
     Returns a list of files reverse sorted by size.
     Bigger files are first processed to try and maximize the efficiency.
@@ -169,7 +169,7 @@ def get_files():
     files = os.listdir(os.curdir)
     size_file = []
     for filename in files:
-        if filename.startswith('data') and filename.endswith('.csv'):
+        if filename.startswith(filter) and filename.endswith('.csv'):
             if f'transformed-{filename}' not in files:
                 size = os.path.getsize(filename)
                 size_file.append((size, filename))
@@ -183,7 +183,7 @@ def main():
     logger.addHandler(log_to_file('transform.log'))
 
     cwd = os.getcwd()
-    files = get_files()
+    files = get_files(options.starts_with)
     processed_data = []
 
     # TODO mem profiling not working with mp
