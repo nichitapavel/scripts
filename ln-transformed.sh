@@ -3,10 +3,11 @@
 
 FOLDER="$2"
 TYPE="$1"
+WHAT="/$3/"
 if [ "${TYPE}" == "metrics" ]; then
-    FILES=$(echo $(find ${FOLDER} -type f | grep metrics))
+    FILES=$(echo $(find ${FOLDER} -type f | grep metrics | grep ${WHAT}))
 elif [ "${TYPE}" == "data" ]; then
-    FILES=$(echo $(find ${FOLDER} -type f | grep -v transformed| grep -v log | grep -v png | grep data | grep csv))
+    FILES=$(echo $(find ${FOLDER} -type f | grep -v transformed| grep -v log | grep -v png | grep data | grep csv | grep ${WHAT}))
 else
     echo "Unkown option. Exiting..."
     exit 1
