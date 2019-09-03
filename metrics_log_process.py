@@ -80,9 +80,12 @@ def get_files(filter):
     files = os.listdir(os.curdir)
     files_ret = []
     for filename in files:
-        if filename.startswith(filter) and filename.endswith('.log'):
-            if f'read-{filename}' not in files:
-                files_ret.append(filename)
+        if filename.endswith('.log') and f'read-{filename}' not in files:
+            if filter is not None:
+                if filename.startswith(filter):
+                    files_ret.append(filename)
+                else:
+                    files_ret.append(filename)
     return files_ret
 
 
