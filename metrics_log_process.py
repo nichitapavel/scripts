@@ -84,8 +84,8 @@ def get_files(filter):
             if filter is not None:
                 if filename.startswith(filter):
                     files_ret.append(filename)
-                else:
-                    files_ret.append(filename)
+            else:
+                files_ret.append(filename)
     return files_ret
 
 
