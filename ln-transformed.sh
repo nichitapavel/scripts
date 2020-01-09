@@ -73,8 +73,8 @@ do
     # METRICS
     if [ "${TYPE}" == "metrics" ]; then
       CLASS="o"
-      echo ${line} ${NUMBER}_${DEVICE}_${OS}_${BENCH_THREADS:0:2}_${CLASS}_${BENCH_THREADS:2:5}
-      # ln -s ${line} ${NUMBER}_${DEVICE}_${OS}_${BENCH_THREADS:0:2}_${CLASS}_${BENCH_THREADS:2:5}
+      # echo ${line} ${NUMBER}_${DEVICE}_${OS}_${BENCH_THREADS:0:2}_${CLASS}_${BENCH_THREADS:2:5}
+      ln -s ${line} ${NUMBER}_${DEVICE}_${OS}_${BENCH_THREADS:0:2}_${CLASS}_${BENCH_THREADS:2:5}
 
     # DATA
     elif [ "${TYPE}" == "data" ]; then
@@ -87,8 +87,8 @@ do
         CLASS=$(echo ${line} | awk -F '/' '{print $7}' | awk -F '_' '{print $2}' | awk -F '-' '{print $2}')
         ITERATION=$(echo ${line} | awk -F '/' '{print $7}' | awk -F '_' '{print $2}' | awk -F '-' '{print $3}')
       fi
-      echo ${line} ${NUMBER}_${DEVICE}_${OS}_${BENCH_THREADS:0:2}_${CLASS,,}_${BENCH_THREADS:2:1}_${ITERATION}
-      # ln -s ${line} ${NUMBER}_${DEVICE}_${OS}_${BENCH_THREADS:0:2}_${CLASS,,}_${BENCH_THREADS:2:1}_${ITERATION}
+      # echo ${line} ${NUMBER}_${DEVICE}_${OS}_${BENCH_THREADS:0:2}_${CLASS,,}_${BENCH_THREADS:2:1}_${ITERATION}
+      ln -s ${line} ${NUMBER}_${DEVICE}_${OS}_${BENCH_THREADS:0:2}_${CLASS,,}_${BENCH_THREADS:2:1}_${ITERATION}
     fi
 
 done
