@@ -39,29 +39,37 @@ case $1 in
 esac
 done
 
-CORES=G_CORES
+if [ -z ${G_CORES}  ]; then
+    echo -e "CORES not set.\n"
+    exit
+elif [ -z ${ROOT_PATH} ]; then
+    echo -e "ROOT PATH not set.\n"
+    exit
+fi
+
+CORES=${G_CORES}
 
 for item in "01" "02" "03" "04" "05" "06" "10" "11" "12"; do
     tsp /home/pavel/git/python-scripts/.venv-37/bin/python /home/pavel/git/python-scripts/metrics_log_process.py -c ${CORES} -d ${ROOT_PATH}/sym_link/sym_link_metrics/ -s ${item}
-    tsp mv /sym_link/sym_link_metrics/metrics_data.csv /sym_link/sym_link_metrics/metrics_data_${item}.csv
-    tsp ln -s /sym_link/sym_link_metrics/metrics_data_${item}.csv /sym_link/metrics_data_${item}.csv
+    tsp mv ${ROOT_PATH}/sym_link/sym_link_metrics/metrics_data.csv ${ROOT_PATH}/sym_link/sym_link_metrics/metrics_data_${item}.csv
+    tsp ln -s ${ROOT_PATH}/sym_link/sym_link_metrics/metrics_data_${item}.csv ${ROOT_PATH}/sym_link/metrics_data_${item}.csv
 
     if [ ${item} == "04" ]; then
         CORES=2
     else
-        CORES=G_CORES
+        CORES=${G_CORES}
     fi
-    tsp /home/pavel/git/python-scripts/.venv-37/bin/python /home/pavel/git/python-scripts/data_csv_process.py -c ${CORES} -d /sym_link/sym_link_data/ -s ${item}
-    tsp mv /sym_link/sym_link_data/processed_data.csv /sym_link/sym_link_data/processed_data_${item}.csv
-    tsp ln -s /sym_link/sym_link_data/processed_data_${item}.csv /sym_link/processed_data_${item}.csv
+    tsp /home/pavel/git/python-scripts/.venv-37/bin/python /home/pavel/git/python-scripts/data_csv_process.py -c ${CORES} -d ${ROOT_PATH}/sym_link/sym_link_data/ -s ${item}
+    tsp mv ${ROOT_PATH}/sym_link/sym_link_data/processed_data.csv ${ROOT_PATH}/sym_link/sym_link_data/processed_data_${item}.csv
+    tsp ln -s ${ROOT_PATH}/sym_link/sym_link_data/processed_data_${item}.csv ${ROOT_PATH}/sym_link/processed_data_${item}.csv
 
-    tsp /home/pavel/git/python-scripts/.venv-37/bin/python /home/pavel/git/python-scripts/merge.py --df /sym_link/processed_data_${item}.csv --mf /sym_link/metrics_data_${item}.csv --sd /sym_link/
-    tsp mv /sym_link/merge_data.csv /sym_link/merge_data_${item}.csv
+    tsp /home/pavel/git/python-scripts/.venv-37/bin/python /home/pavel/git/python-scripts/merge.py --df ${ROOT_PATH}/sym_link/processed_data_${item}.csv --mf ${ROOT_PATH}/sym_link/metrics_data_${item}.csv --sd ${ROOT_PATH}/sym_link/
+    tsp mv ${ROOT_PATH}/sym_link/merge_data.csv ${ROOT_PATH}/sym_link/merge_data_${item}.csv
 done
 
-tsp /home/pavel/git/python-scripts/.venv-37/bin/python /home/pavel/git/python-scripts/data_jp.py -d /sym_link/
-tsp /home/pavel/git/python-scripts/.venv-37/bin/python /home/pavel/git/python-scripts/stats.py --df /sym_link/merge_data.csv --sd /sym_link/stats
-tsp bash -c "mv /sym_link/stats/*.png /sym_link/stats/graphs/."
+tsp /home/pavel/git/python-scripts/.venv-37/bin/python /home/pavel/git/python-scripts/data_jp.py -d ${ROOT_PATH}/sym_link/
+tsp /home/pavel/git/python-scripts/.venv-37/bin/python /home/pavel/git/python-scripts/stats.py --df ${ROOT_PATH}/sym_link/merge_data.csv --sd ${ROOT_PATH}/sym_link/stats
+tsp bash -c "mv ${ROOT_PATH}/sym_link/stats/*.png ${ROOT_PATH}/sym_link/stats/graphs/."
 
-tsp bash -c "cd /home/pavel/Desktop/ && tar -cf - data_0306_01/ | xz --threads=8 > \"/home/pavel/data/compressed/2020-01-09-10-10-10 data jp 2019 paper.tar.xz\""
-tsp bash -c "cd /home/pavel/Desktop/ && tar -cf - data_0306_01/ | xz --threads=8 > \"2020-01-09-10-10-10 data jp 2019 paper.tar.xz\""
+tsp bash -c "cd /home/pavel/Desktop/ && tar -cf - data_0306_01/ | xz --threads=0 > \"/home/pavel/data/compressed/2020-01-10-10-10-10 data jp 2019 paper.tar.xz\""
+# tsp bash -c "cd /home/pavel/Desktop/ && tar -cf - data_0306_01/ | xz --threads=0 > \"2020-01-09-10-10-10 data jp 2019 paper.tar.xz\""
