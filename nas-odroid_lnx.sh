@@ -7,7 +7,7 @@ export TMPDIR=/var/log/tsp/odroidxu4_bd
 export TS_MAXFINISHED=20
 export TS_SOCKET=/var/log/tsp/odroidxu4_b
 
-DIRECTORY=~/data/november/release/odroidxu4_linux/02/
+DIRECTORY=~/test/02/
 LOOPS=1
 LINE=2
 PMLIB_SERVER=10.209.3.195:6526
@@ -15,6 +15,8 @@ PM_INFO=10.209.3.80
 PM_INFO_PORT=500${LINE}
 SYSTEM=linux
 DEVICE=odroid
+PYTHON=~/test/python-scripts/.venv/bin/python
+FLASK_PMINFO=~/test/python-scripts/thread_flask_pminfo.py
 
 DEV=odroidxu4
 

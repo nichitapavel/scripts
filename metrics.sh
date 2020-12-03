@@ -16,6 +16,8 @@ Collect power usage data from a PMLib server. Currently only matrix multiplicati
 
 Required arguments:
 -n|--name NAME                - Name of the experiment. A directory with same NAME will be created to store data.
+--python                      - Python environment to use, path to python binary
+--flask-pminfo                - path to python script of flask and pm_info
 -d|--directory DIRECTORY      - Path to where the collected data will be stored.
 -l|--loops LOOPS              - How many times an experiment must be executed.
 --line LINE                   - Number corresponding to the BeagleBoneBlack (BBB) UCM cape lines.
@@ -24,7 +26,7 @@ Required arguments:
 --pmlib-server PMLIB_SERVER   - IP and port of the BBB where pmlib server is running and UCM cape is connected.
 --pm-info PM_INFO_FLASK       - IP where flask server and pm_info tool are running.
                                 Most probably is the same device where metrics.sh will be run, but this ARGUMENT is
-                                passed to the clients that compute. Do NOT pass localhost or similar, only external 
+                                passed to the clients that compute. Do NOT pass localhost or similar, only external
                                 availabe IP's.
 -p|--port PORT                - Flask server port (PM_INFO_FLASK). Done this way to be able to run multiple PM_INFO_FLASK
                                 instances on the same device.
@@ -51,6 +53,14 @@ do
 case $1 in
   -n|--name)
     NAME=$2
+    shift 2
+  ;;
+  --python)
+    PYTHON=$2
+    shift 2
+  ;;
+  --flask-pminfo)
+    FLASK_PMINFO=$2
     shift 2
   ;;
   -d|--directory)
@@ -169,12 +179,12 @@ done
 PM_INFO_FLASK=http://${PM_INFO_FLASK}:${PORT}/message
 
 ############################# Log to file arguments values ##################################################
-LOGGING=(NAME DIRECTORY LOOPS LINE\ 
-        PMLIB_SERVER PM_INFO_FLASK PORT\ 
-        SYSTEM DEVICE APPIUM_PORT\ 
-        PRINT_MATRIX MODULE\ 
-        MATRIX_SIZE[@]\ 
-        BENCHMARK THREADS\ 
+LOGGING=(NAME DIRECTORY LOOPS LINE\
+        PMLIB_SERVER PM_INFO_FLASK PORT\
+        SYSTEM DEVICE APPIUM_PORT\
+        PRINT_MATRIX MODULE\
+        MATRIX_SIZE[@]\
+        BENCHMARK THREADS\
         SLEEP_PMLIB_STARTUP SLEEP_START SLEEP_FINISH)
 LOG_FILE="${DIRECTORY}/${NAME}/metrics_${NAME}.log"
 mkdir -p "${DIRECTORY}/${NAME}/"
@@ -207,7 +217,7 @@ do
     # on line 216 removed ${J} because with npb we only try 1 problem size
 
     screen -dmS ${NAME} \
-      ~/git/python-scripts/.venv/bin/python ~/git/python-scripts/thread_flask_pminfo.py \
+      ${PYTHON} ${FLASK_PMINFO} \
         -l ${LINE} \
         -p ${PORT} \
         -s ${PMLIB_SERVER} \
