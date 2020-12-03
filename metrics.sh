@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x
+# set -x
 VERSION=v0.2-beta-02
 
 SLEEP_PMLIB_STARTUP=0s

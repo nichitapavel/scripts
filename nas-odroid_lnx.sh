@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x
+# set -x
 
 # Use tsp to a specific queue
 export TMPDIR=/var/log/tsp/odroidxu4_bd
@@ -17,6 +17,7 @@ SYSTEM=linux
 DEVICE=odroid
 PYTHON=~/test/python-scripts/.venv/bin/python
 FLASK_PMINFO=~/test/python-scripts/thread_flask_pminfo.py
+METRICS_SCRIPT=~/test/scripts/metrics.sh
 
 DEV=odroidxu4
 
@@ -138,7 +139,7 @@ PROBLEM_SIZE="w"
 THREADS=4
 NAME=${DEV}_${SYSTEM}_${BENCHMARK}_${PROBLEM_SIZE}_${THREADS}
 DIR="${DIRECTORY}"
-tsp metrics.sh -n ${NAME} -d ${DIRECTORY} -l ${LOOPS}  --line ${LINE}\
+tsp ${METRICS_SCRIPT} --python ${PYTHON} --flask-pminfo ${FLASK_PMINFO}  -n ${NAME} -d ${DIRECTORY} -l ${LOOPS}  --line ${LINE}\
                --pmlib-server ${PMLIB_SERVER} --pm-info ${PM_INFO} -p ${PM_INFO_PORT}\
                -s ${SYSTEM} -t ${THREADS} -b ${BENCHMARK} --device ${DEVICE}\
                --size-list ${PROBLEM_SIZE^^}
