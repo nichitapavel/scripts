@@ -1,11 +1,11 @@
 #!/bin/bash
 
-#set -x
+set -x
 VERSION=v0.2-beta-02
 
-SLEEP_PMLIB_STARTUP=10s
-SLEEP_START=10s
-SLEEP_FINISH=10s
+SLEEP_PMLIB_STARTUP=0s
+SLEEP_START=0s
+SLEEP_FINISH=0s
 
 # Default values
 MODULE=50
@@ -176,7 +176,7 @@ LOGGING=(NAME DIRECTORY LOOPS LINE\
         MATRIX_SIZE[@]\ 
         BENCHMARK THREADS\ 
         SLEEP_PMLIB_STARTUP SLEEP_START SLEEP_FINISH)
-LOG_FILE="${DIRECTORY}/${NAME}/metrics-${NAME}.log"
+LOG_FILE="${DIRECTORY}/${NAME}/metrics_${NAME}.log"
 mkdir -p "${DIRECTORY}/${NAME}/"
 touch ${LOG_FILE}
 echo "============== Variables ==============" | tee -a ${LOG_FILE}
@@ -195,9 +195,16 @@ do
   do
     echo "============== Size: ${j} ==============" | tee -a ${LOG_FILE}
     if [ ${i} -lt 10 ]; then
-      I=0${i}
-    else I=${i}
+      I=00${i}
     fi
+    if [ ${i} -ge 10 ]; then
+      I=0${i}
+    fi
+    if [ ${i} -ge 100 ]; then
+      I=${i}
+    fi
+
+    # on line 216 removed ${J} because with npb we only try 1 problem size
 
     screen -dmS ${NAME} \
       ~/git/python-scripts/.venv/bin/python ~/git/python-scripts/thread_flask_pminfo.py \
@@ -205,7 +212,7 @@ do
         -p ${PORT} \
         -s ${PMLIB_SERVER} \
         -d "${DIRECTORY}/${NAME}/" \
-        -f data-${NAME}-${j}-${I}.csv \
+        -f data_${NAME}_${I}.csv \
         -r APCape8L
     ##############################
     sleep ${SLEEP_START}
@@ -213,7 +220,8 @@ do
     if [ "${SYSTEM}" == "linux" ]; then
       # Matrix multiplication linux
       # Expects bin file to be always in ~/matrix-jar-app independent of version
-      ssh ${DEVICE} "JAVA_HOME=/opt/jdk1.8.0_202/jre JAVA_OPTS=\"-Xms512m\" ~/benchmark-jar-app/bin/benchmark-jar-app -s ${j} -b ${BENCHMARK} -t ${THREADS} -e ${PM_INFO_FLASK}" | tee -a ${LOG_FILE}
+      # ssh ${DEVICE} "JAVA_HOME=/opt/jdk1.8.0_202/jre JAVA_OPTS=\"-Xms512m\" ~/benchmark-jar-app/bin/benchmark-jar-app -s ${j} -b ${BENCHMARK} -t ${THREADS} -e ${PM_INFO_FLASK}" | tee -a ${LOG_FILE}
+      ssh ${DEVICE} "JAVA_OPTS=\"-Xms512m\" ~/benchmark-jar-app/bin/benchmark-jar-app -s ${j} -b ${BENCHMARK} -t ${THREADS} -e ${PM_INFO_FLASK}" | tee -a ${LOG_FILE}
     elif [ "${SYSTEM}" == "android" ]; then
       # Matrix multiplication android
 
